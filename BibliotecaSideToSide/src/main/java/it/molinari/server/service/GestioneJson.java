@@ -1,4 +1,4 @@
-package it.molinari.server.app.server.service;
+package it.molinari.server.service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,21 +8,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import it.molinari.server.app.server.model.*;
+import it.molinari.server.model.*;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneJson 
 {
-	private static final String PERCORSO_FILE="archivio.json";
+	private String[] archivi={"archivio.json", "users.json", "whitelist.json"};
 	private ObjectMapper mapper = new ObjectMapper();
 	private File streamFile;
 
 	
+
 	
 	public GestioneJson()
 	{
-		this.streamFile = new File(PERCORSO_FILE);
+		
 		
 		/*
 		 	* di natura jackson e json non supportano il tipo local time usato nella classe item, quindi devo aggiungere il 
@@ -38,10 +39,12 @@ public class GestioneJson
 	}
 	
 	
-	public void aggiornaJson(List<Item> lista)
+	public void aggiornaJson(List<Item> lista, int indiceFile)
 	{
 		try
-		{		
+		{	
+			this.streamFile = new File(this.archivi[indiceFile]);
+			
 			//utililzzo il metodowriteValue invece che writeValueAsString che prende come parametro 
 			//il riferimento al file oltre all'oggetto wda trasformare in json
 			this.mapper.writeValue(this.streamFile, lista);
@@ -52,12 +55,14 @@ public class GestioneJson
 		}
 	}
 	
-	public List<Item> leggiJson()
+	public List<Item> leggiJson(int indiceFile)
 	{
 		List<Item> lista= new ArrayList<Item>();
 		
 		try
 		{
+			this.streamFile = new File(this.archivi[indiceFile]);
+			
 			if(this.streamFile.length()==0)
 			{
 				return lista;

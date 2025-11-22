@@ -1,4 +1,4 @@
-package it.molinari.server.app.server.model;
+package it.molinari.server.model;
 
 import java.time.*;
 
