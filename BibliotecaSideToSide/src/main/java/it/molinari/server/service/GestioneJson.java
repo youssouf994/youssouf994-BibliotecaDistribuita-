@@ -1,43 +1,33 @@
 package it.molinari.server.service;
 
+import it.molinari.server.enums.*;
+import it.molinari.server.model.*;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import it.molinari.server.model.*;
-
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneJson 
 {
-	private String[] archivi={"archivio.json", "users.json", "whitelist.json"};
+	private String[] archivi={
+		"src/main/java/it/molinari/server/files/archivio.json", 
+		"src/main/java/it/molinari/server/files/users.json", 
+		"src/main/java/it/molinari/server/files/whitelist.json", 
+		"src/main/java/it/molinari/server/files/tokens.json"
+	};
 	private ObjectMapper mapper = new ObjectMapper();
 	private File streamFile;
 
-	
-
-	
-	public GestioneJson()
+	public GestioneJson() 
 	{
-		
-		
-		/*
-		 	* di natura jackson e json non supportano il tipo local time usato nella classe item, quindi devo aggiungere il 
-		 	* modulo javaTimeModule attraverso la funzione registerModule
-		*/
         this.mapper.registerModule(new JavaTimeModule());
-        
-        /*
-         	*senza disable jackson stamperebbe i secondi trascorsi dalla mezzanotte, invece così compila il json
-         	*usando il formato leggibile dall'uomo	 
-        */
-        this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);        
+        this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);    
 	}
-	
 	
 	public void aggiornaJson(List<Item> lista, int indiceFile)
 	{
@@ -45,13 +35,37 @@ public class GestioneJson
 		{	
 			this.streamFile = new File(this.archivi[indiceFile]);
 			
-			//utililzzo il metodowriteValue invece che writeValueAsString che prende come parametro 
-			//il riferimento al file oltre all'oggetto wda trasformare in json
+			if (!this.streamFile.getParentFile().exists()) {
+				this.streamFile.getParentFile().mkdirs();
+			}
+			
 			this.mapper.writeValue(this.streamFile, lista);
+			System.out.println("aggiornaJson OK: " + this.streamFile.getAbsolutePath());
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
+			System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
+			e.printStackTrace();
+		}
+	}
+	
+	public void aggiornaJsonUser(List<User> lista, int indiceFile)
+	{
+		try
+		{	
+			this.streamFile = new File(this.archivi[indiceFile]);
+			
+			if (!this.streamFile.getParentFile().exists()) {
+				this.streamFile.getParentFile().mkdirs();
+			}
+			
+			this.mapper.writeValue(this.streamFile, lista);
+			System.out.println("aggiornaJsonUser OK: " + this.streamFile.getAbsolutePath());
+		}
+		catch(Exception e)
+		{
+			System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
+			e.printStackTrace();
 		}
 	}
 	
@@ -63,20 +77,94 @@ public class GestioneJson
 		{
 			this.streamFile = new File(this.archivi[indiceFile]);
 			
-			if(this.streamFile.length()==0)
+			if(!this.streamFile.exists())
 			{
+				System.out.println("leggiJson: file vuoto o inesistente");
 				return lista;
 			}
-			/*
-			 	*siccome List è un tipo generico e java in fase di compilazione non specifica subito il tipo di un oggetto generico,
-			 	*devo usare typerreference che va a coprire questa mancanza 
-			 * */
-			return this.mapper.readValue(this.streamFile, new TypeReference<List<Item>>() {});
+			
+			lista = this.mapper.readValue(this.streamFile, new TypeReference<List<Item>>() {});
+			System.out.println("leggiJson OK: " + lista.size() + " elementi");
+			return lista;
 		}
 		catch(Exception e)
 		{
-			System.out.println(e);
+			System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
+			e.printStackTrace();
 			return lista;
 		}
+	}
+	
+	public List<User> leggiJsonUser(int indiceFile)
+	{
+	    List<User> lista = new ArrayList<User>();
+	    
+	    try
+	    {
+	        this.streamFile = new File(this.archivi[indiceFile]);
+	        
+	        // Se il file non esiste o è vuoto, ritorna lista vuota
+	        if(!this.streamFile.exists())
+	        {
+	            System.out.println("leggiJsonUser: file non esiste, creo nuovo file");
+	            // Crea il file vuoto con array JSON
+	            this.streamFile.getParentFile().mkdirs();
+	            this.mapper.writeValue(this.streamFile, lista);
+	            return lista;
+	        }
+	        
+	        if(this.streamFile.length() == 0)
+	        {
+	            System.out.println("leggiJsonUser: file vuoto, inizializzo array");
+	            this.mapper.writeValue(this.streamFile, lista);
+	            return lista;
+	        }
+	        
+	        lista = this.mapper.readValue(this.streamFile, new TypeReference<List<User>>() {});
+	        System.out.println("leggiJsonUser OK: " + lista.size() + " utenti");
+	        return lista;
+	    }
+	    catch(Exception e)
+	    {
+	        System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
+	        e.printStackTrace();
+	        return lista;
+	    }
+	}
+
+	public List<Token> leggiJsonToken(int indiceFile)
+	{
+	    List<Token> lista = new ArrayList<Token>();
+	    
+	    try
+	    {
+	        this.streamFile = new File(this.archivi[indiceFile]);
+	        
+	        // Se il file non esiste o è vuoto, ritorna lista vuota
+	        if(!this.streamFile.exists())
+	        {
+	            System.out.println("leggiJsonToken: file non esiste, creo nuovo file");
+	            this.streamFile.getParentFile().mkdirs();
+	            this.mapper.writeValue(this.streamFile, lista);
+	            return lista;
+	        }
+	        
+	        if(this.streamFile.length() == 0)
+	        {
+	            System.out.println("leggiJsonToken: file vuoto, inizializzo array");
+	            this.mapper.writeValue(this.streamFile, lista);
+	            return lista;
+	        }
+	        
+	        lista = this.mapper.readValue(this.streamFile, new TypeReference<List<Token>>() {});
+	        System.out.println("leggiJsonToken OK: " + lista.size() + " token");
+	        return lista;
+	    }
+	    catch(Exception e)
+	    {
+	        System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
+	        e.printStackTrace();
+	        return lista;
+	    }
 	}
 }

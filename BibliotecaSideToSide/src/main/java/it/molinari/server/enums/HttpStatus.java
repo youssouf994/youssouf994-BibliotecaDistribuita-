@@ -1,4 +1,4 @@
-package it.molinari.server.httpStatus.enums;
+package it.molinari.server.enums;
 
 /*
  * questo enum contiene le risposte del server
