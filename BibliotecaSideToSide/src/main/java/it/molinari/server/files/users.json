@@ -1,1 +1,1 @@
-[]
+[{"id":1,"nome":"Mario","cognome":"Rossi","username":"mrossi","pass":"password123","listisInprestito":[{"tipologia":"Cd","nome":"Raggata the blanc","autore":"The Police","richiedente":"utente1","tipologia":"musica","codice":1,"isPrestato":false,"orarioPrestito":"20:29:22.2493926","numTracce":16,"durata":99}],"ruolo":true}]

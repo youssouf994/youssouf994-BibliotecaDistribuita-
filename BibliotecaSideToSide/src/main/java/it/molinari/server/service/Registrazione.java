@@ -21,7 +21,6 @@ public class Registrazione
 	private ObjectMapper mapper = new ObjectMapper();
 	private GestioneJson IOJson = new GestioneJson();
 	private List<Item> items = new ArrayList<Item>();
-	private String response;
 	
 	public Registrazione()
 	{
@@ -38,26 +37,31 @@ public class Registrazione
 		this.ruolo=ruolo;
 	}
 	
-	public void registra(int id, String nome, String cognome, String username, String password, boolean ruolo)
+	public void registra(User user)
 	{
 		users=IOJson.leggiJsonUser(1);
 		
-		for (User user : users)
+		if (users.isEmpty())
 		{
-			if(user.getCognome()==cognome || users ==null)
-			{
-				break;
-			}
-			else
-			{
-				this.id=id;
-				this.nome=nome;
-				this.cognome=cognome;
-				this.username=username;
-				this.password=password;
-				this.ruolo=ruolo;
-			}
+			users.add(user);
+			IOJson.aggiornaJsonUser(users, 1);
 		}
+		else
+		{
+			for (User appoggio : users)
+			{
+				if(user.getCognome()==appoggio.getCognome())
+				{
+					break;
+				}
+				else
+				{						
+					users.add(user);
+					IOJson.aggiornaJsonUser(users, 1);
+					
+				}
+			}
+		}	
 	}
 
 	public String getNome() {

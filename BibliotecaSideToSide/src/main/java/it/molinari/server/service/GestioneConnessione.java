@@ -146,7 +146,7 @@ public class GestioneConnessione
 		                
 		                Registrazione registrazione= new Registrazione();
 		                
-		                registrazione.registra(nuovoUtente.getId(), nuovoUtente.getNome(), nuovoUtente.getCognome(), nuovoUtente.getUsername(), nuovoUtente.getPass(), nuovoUtente.isRuolo());
+		                registrazione.registra(nuovoUtente);
 		                serverResponse = HttpStatus.OK.getCodice() + "\t" +
 		                                HttpStatus.OK.getMessaggio() + "\t" +
 		                                tkReg.getToken() + "\t" +

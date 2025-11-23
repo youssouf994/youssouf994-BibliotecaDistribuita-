@@ -89,7 +89,6 @@ public class GestioneJson
 		}
 		catch(Exception e)
 		{
-			System.out.println(HttpStatus.INTERNAL_ERROR.getCodice()+" "+HttpStatus.INTERNAL_ERROR.getMessaggio());
 			e.printStackTrace();
 			return lista;
 		}
@@ -113,9 +112,9 @@ public class GestioneJson
 	            return lista;
 	        }
 	        
-	        if(this.streamFile.length() == 0)
+	        if(this.streamFile.length() ==0)
 	        {
-	            System.out.println("leggiJsonUser: file vuoto, inizializzo array");
+	            System.out.println("non ci sono use registrati");
 	            this.mapper.writeValue(this.streamFile, lista);
 	            return lista;
 	        }
