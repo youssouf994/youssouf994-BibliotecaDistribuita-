@@ -37,14 +37,16 @@ public class Registrazione
 		this.ruolo=ruolo;
 	}
 	
-	public void registra(User user)
+	public boolean registra(User user)
 	{
 		users=IOJson.leggiJsonUser(1);
+		boolean check=false;
 		
 		if (users.isEmpty())
 		{
 			users.add(user);
 			IOJson.aggiornaJsonUser(users, 1);
+			check= true;
 		}
 		else
 		{
@@ -52,16 +54,18 @@ public class Registrazione
 			{
 				if(user.getCognome()==appoggio.getCognome())
 				{
-					break;
+					check= false;
 				}
 				else
 				{						
 					users.add(user);
 					IOJson.aggiornaJsonUser(users, 1);
+					check= true;
 					
 				}
 			}
-		}	
+		}
+		return check;
 	}
 
 	public String getNome() {

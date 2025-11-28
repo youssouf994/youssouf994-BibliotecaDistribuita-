@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -39,14 +40,16 @@ public class TestGestConnessione {
             Thread.sleep(1000);
 
             // === CLIENT SOCKET ===
-            Socket client = new Socket("localhost", 1051);
+            Socket client = new Socket("localhost", 1053);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            List<Object> oggettoMittente = new ArrayList<Object>();
 
             // JACKSON
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            
 
             // === CREO UN ITEM DI ESEMPIO ===
             Item item = new Cd(
@@ -72,11 +75,15 @@ public class TestGestConnessione {
             // Creo wrapper con token e action
             String token = "abc123token";
             actionType = ActionType.REGISTRAZIONE;
+            
+            oggettoMittente.add(user);
 
-            GeneratoreJson request = new GeneratoreJson(token, actionType, user);
+            GeneratoreJson request = new GeneratoreJson();
+            
+            
 
             // Serializzo tutto in JSON su una sola linea
-            String json = mapper.writeValueAsString(request).replace("\n", "").replace("\r", "");
+            String json = mapper.writeValueAsString(request.getOggettoRequest(token, actionType, oggettoMittente)).replace("\n", "").replace("\r", "");
 
             // === OUTPUT CLIENT ===
             System.out.println("=== CLIENT - JSON INVIATO ===");

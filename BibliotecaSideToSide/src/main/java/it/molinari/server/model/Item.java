@@ -3,32 +3,38 @@ package it.molinari.server.model;
 import java.time.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 
-@JsonTypeInfo //usata per gestire il polimorfismo e ereditarietà
-(
-		use= JsonTypeInfo.Id.NAME, //usa il nome specificato in subTypes
-		include =JsonTypeInfo.As.PROPERTY, //aggiunge al json una proprieta che indica il tipo di oggetto
-		property= "tipologia", //nome da dare alla proprieta che indica il tipo oggetto
-		visible = true //rende accessibile la proprietà tipo altrimenti usata solo da jackson in modo privato (restituirebbe null senza)
-)
+@JsonTypeInfo(
+	    use = JsonTypeInfo.Id.NAME,
+	    include = JsonTypeInfo.As.PROPERTY,
+	    property = "tipo",
+	    visible = true
+	)
+	@JsonSubTypes({
+	    @JsonSubTypes.Type(value = Libro.class, name = "Libro"),
+	    @JsonSubTypes.Type(value = Rivista.class, name = "Rivista"),
+	    @JsonSubTypes.Type(value = Cd.class, name = "Cd")
+	})
 
-@JsonSubTypes //dico a jacksomn qulai specializzazioni della superclasse esistono (definite in jsonTypeInfo) 
-(
-		{
-			//value = sottoclasse creata da jackson, name= nome da dare all'atributo
-			@JsonSubTypes.Type(value=Libro.class, name= "Libro"),
-			@JsonSubTypes.Type(value=Rivista.class, name= "Rivista"),
-			@JsonSubTypes.Type(value=Cd.class, name= "Cd")
-		}
-)
-
+	@JsonIdentityInfo(
+	    generator = ObjectIdGenerators.PropertyGenerator.class,
+	    property = "id"
+	)
 
 public class Item 
 {
-	public String nome, autore, richiedente, tipologia;
-	public int codice;
+	public String nome, autore, richiedente, tipologia, classe;
+	public int codice, id;
+	
+
+	public void setPrestato(boolean isPrestato) {
+		this.isPrestato = isPrestato;
+	}
+
 	public boolean isPrestato;
 	public LocalTime orarioPrestito;
 	
@@ -72,6 +78,16 @@ public class Item
 
 	public String getAutore() {
 		return autore;
+	}
+
+	
+	
+	public String getClasse() {
+		return classe;
+	}
+
+	public void setClasse(String classe) {
+		this.classe = classe;
 	}
 
 	public void setAutore(String autore) {
@@ -118,5 +134,11 @@ public class Item
 		this.orarioPrestito = orarioPrestito;
 	}
 
+	public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
 }

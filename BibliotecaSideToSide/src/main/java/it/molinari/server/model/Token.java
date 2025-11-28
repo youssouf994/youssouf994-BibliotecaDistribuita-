@@ -1,8 +1,22 @@
 package it.molinari.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+
+@JsonTypeInfo(
+	    use = JsonTypeInfo.Id.NAME,
+	    include = JsonTypeInfo.As.PROPERTY,
+	    property = "@classe"
+	)
+
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class Token 
 {
-	private String Token;
+	private String Token, classe;
+	private int id;
 
 	public Token()
 	{
@@ -16,4 +30,24 @@ public class Token
 	public void setToken(String token) {
 		Token = token;
 	}
+
+	public int getId() {
+		return id;
+	}
+	
+	
+
+	public String getClasse() {
+		return classe;
+	}
+
+	public void setClasse(String classe) {
+		this.classe = classe;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	
 }

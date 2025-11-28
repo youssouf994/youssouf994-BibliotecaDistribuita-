@@ -7,6 +7,8 @@ public class Rivista extends Item
 {
 	public String edizione, periodicita;
 	public String periodo[]={"giornaliero", "settimanale", "mensile"};
+	public int codice;
+	private int id;
 	
 	public Rivista()
 	{
@@ -74,4 +76,22 @@ public class Rivista extends Item
 	public void setPeriodo(String[] periodo) {
 		this.periodo = periodo;
 	}
+
+	public int getCodice() {
+		return codice;
+	}
+
+	public void setCodice(int codice) {
+		this.codice = codice;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	
 }

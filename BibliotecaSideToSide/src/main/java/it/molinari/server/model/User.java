@@ -3,10 +3,21 @@ package it.molinari.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonTypeInfo(
+	    use = JsonTypeInfo.Id.NAME,
+	    include = JsonTypeInfo.As.PROPERTY,
+	    property = "@classe"
+	)
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class User 
 {
 	private int id;
-	private String nome, cognome, username, pass;
+	private String nome, cognome, username, pass, classe;
 	private List<Item> listisInprestito = new ArrayList<>();
 	private boolean ruolo;
 	
@@ -25,6 +36,40 @@ public class User
 		this.listisInprestito=listIsPrestito;
 		this.ruolo=ruolo;
 	}
+	
+	@Override
+	public String toString() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("User {\n");
+	    sb.append("  id: ").append(id).append(",\n");
+	    sb.append("  nome: ").append(nome).append(",\n");
+	    sb.append("  cognome: ").append(cognome).append(",\n");
+	    sb.append("  username: ").append(username).append(",\n");
+	    sb.append("  pass: ").append(pass).append(",\n");
+	    sb.append("  ruolo: ").append(ruolo).append(",\n");
+	    sb.append("  classe: ").append(classe).append(",\n");
+	    sb.append("  listisInprestito: [\n");
+	    
+	    if (listisInprestito != null) {
+	        for (Item item : listisInprestito) {
+	            if (item != null) {
+	                sb.append("    ").append(item.toString().replace("\n", "\n    ")).append(",\n");
+	            } else {
+	                sb.append("    null,\n");
+	            }
+	        }
+	    }
+	    
+	    sb.append("  ]\n");
+	    sb.append("}");
+	    return sb.toString();
+	}
+
+	
+	public void setId(int id)
+	{
+		this.id=id;
+	}
 
 	public String getNome() {
 		return nome;
@@ -40,6 +85,16 @@ public class User
 
 	public void setCognome(String cognome) {
 		this.cognome = cognome;
+	}
+
+	
+	
+	public String getClasse() {
+		return classe;
+	}
+
+	public void setClasse(String classe) {
+		this.classe = classe;
 	}
 
 	public String getUsername() {

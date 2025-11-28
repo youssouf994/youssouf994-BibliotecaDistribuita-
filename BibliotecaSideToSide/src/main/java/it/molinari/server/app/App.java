@@ -1,15 +1,26 @@
 package it.molinari.server.app;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Hello world!
- *
- */
+
+import it.molinari.server.service.GestioneConnessione;
+
+
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException
     {
-        System.out.println( "Hello World!" );
+        GestioneConnessione socket = new GestioneConnessione();
+        
+        try
+        {
+        	while(true)
+        	{
+        		socket.apriStreamDaClient();
+        	}
+        }
+        
     } 
 }

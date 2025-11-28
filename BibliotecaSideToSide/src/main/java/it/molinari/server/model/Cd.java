@@ -3,10 +3,14 @@ package it.molinari.server.model;
 import java.time.*;
 import java.util.Scanner;
 
+
 public class Cd extends Item
 {
 	public int numTracce, durata;
+	private int id;
 	
+	
+
 	public Cd()
 	{
 		
@@ -65,5 +69,12 @@ public class Cd extends Item
 	 public void setDurata(int durata) {
 		 this.durata = durata;
 	 }
+	 
+	 public int getId() {
+			return id;
+		}
 
+		public void setId(int id) {
+			this.id = id;
+		}
 }

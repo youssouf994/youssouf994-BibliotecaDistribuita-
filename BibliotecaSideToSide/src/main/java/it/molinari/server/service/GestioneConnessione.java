@@ -13,7 +13,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,7 +25,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneConnessione 
 {
-	private static final int PORT=1051;
+	private static final int PORT=1053;
 	ServerSocket serverSocket;
 	Socket clientSocket=null;//abbinamento per il client
 	BufferedReader inputDaClient= null;
@@ -34,7 +36,7 @@ public class GestioneConnessione
 	private Login login = new Login();
 	private GestioneJson IOJson = new GestioneJson();
 	private ObjectMapper mapper = new ObjectMapper();
-	private GeneratoreJson pacchettatore =new GeneratoreJson();
+	private GeneratoreJson converter =new GeneratoreJson();
 	private Tokenizer tokenizer = new Tokenizer();
 	
 	
@@ -110,8 +112,8 @@ public class GestioneConnessione
 	            try 
 	            {
 	                System.out.println("Tentativo di deserializzazione JSON...");
-	                pacchettatore = mapper.readValue(this.str, GeneratoreJson.class);
-	                System.out.println("JSON deserializzato con successo!");
+	                converter = mapper.readValue(this.str, GeneratoreJson.class);
+	                System.out.println("JSON deserializzato con successo!\n"+converter.getListaData());
 	            } 
 	            catch (Exception e) 
 	            {
@@ -125,10 +127,10 @@ public class GestioneConnessione
 	            String serverResponse;
 
 	            // Gestione azioni
-	            System.out.println("ActionType ricevuto: " + pacchettatore.getActionType());
-	            switch (pacchettatore.getActionType()) 
+	            System.out.println("ActionType ricevuto: " + converter.getActionType());
+	            switch (converter.getActionType()) 
 	            {
-		            case LOGIN:
+		            /*case "LOGIN":
 		                Token tk = tokenizer.getToken();
 		                String username = ((User) pacchettatore.getData()).getUsername();
 		                
@@ -138,28 +140,27 @@ public class GestioneConnessione
 		                                tk.getToken() + "\t" +
 		                                "LOGIN" + "\t" +
 		                                "User: " + username;
-		                break;
+		                break;*/
 	
-		            case REGISTRAZIONE:
-		            	User nuovoUtente = (User) pacchettatore.getData();
+		            case "REGISTRAZIONE":
+		            	List<Object> lista = converter.getListaData() ;
+		            	
 		                Token tkReg = tokenizer.getToken();
-		                
+		                User nuovoUtente =mapper.convertValue(lista.get(0), User.class);
 		                Registrazione registrazione= new Registrazione();
 		                
-		                registrazione.registra(nuovoUtente);
-		                serverResponse = HttpStatus.OK.getCodice() + "\t" +
-		                                HttpStatus.OK.getMessaggio() + "\t" +
-		                                tkReg.getToken() + "\t" +
-		                                "REGISTRAZIONE" + "\t" +
-		                                "Utente registrato";
+		                if(registrazione.registra(nuovoUtente)==true)
+		                {
+		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType();
+		                }
+		                else
+		                {
+		                	serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" +HttpStatus.BAD_REQUEST.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType();
+		                }
 		                break;
 	
 		            default:
-		                serverResponse = HttpStatus.INTERNAL_ERROR.getCodice() + "\t" +
-		                                HttpStatus.INTERNAL_ERROR.getMessaggio() + "\t" +
-		                                "N/A" + "\t" +
-		                                "UNKNOWN" + "\t" +
-		                                "Azione non riconosciuta";
+		            	serverResponse = HttpStatus.INTERNAL_ERROR.getCodice() + "\t" +HttpStatus.INTERNAL_ERROR.getMessaggio()  +  converter.getActionType();
 		                break;
 	        }
 
