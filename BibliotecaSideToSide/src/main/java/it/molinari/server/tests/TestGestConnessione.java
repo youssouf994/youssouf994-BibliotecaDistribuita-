@@ -40,7 +40,7 @@ public class TestGestConnessione {
             Thread.sleep(1000);
 
             // === CLIENT SOCKET ===
-            Socket client = new Socket("localhost", 1053);
+            Socket client = new Socket("localhost", 1050);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             List<Object> oggettoMittente = new ArrayList<Object>();
@@ -58,23 +58,22 @@ public class TestGestConnessione {
                     false,
                     "utente1",
                     16,
-                    99,
-                    1,
-                    "musica",
+                    120,
+                    5,
+                    "Cd",
                     LocalTime.now()
             );
 
             List<Item> prestiti = new ArrayList<>();
-            prestiti.add(item);
+            //prestiti.add(item);
 
             // Creo user
             User user = new User(
-                    1, "Mario", "Rossi", "mrossi", "password123", prestiti, true
-            );
+                    0, "Mari", "Rossi", "youss125", "password123", prestiti, false);
 
             // Creo wrapper con token e action
-            String token = "abc123token";
-            actionType = ActionType.REGISTRAZIONE;
+            String token = "";
+            actionType = ActionType.GET_BOOKS_REQUEST;
             
             oggettoMittente.add(user);
 

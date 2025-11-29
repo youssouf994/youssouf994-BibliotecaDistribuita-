@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 @JsonTypeInfo(
 	    use = JsonTypeInfo.Id.NAME,
 	    include = JsonTypeInfo.As.PROPERTY,
-	    property = "tipo",
+	    property = "tipologia",
 	    visible = true
 	)
 	@JsonSubTypes({
@@ -141,4 +141,6 @@ public class Item
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	
 }

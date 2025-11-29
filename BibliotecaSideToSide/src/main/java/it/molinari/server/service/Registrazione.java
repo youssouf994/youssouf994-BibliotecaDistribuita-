@@ -16,7 +16,6 @@ public class Registrazione
 	private String nome, cognome, username, password;
 	private int id;
 	private boolean ruolo;
-	private String actionType=ActionType.REGISTRAZIONE.getAzione();
 	private List<User> users = new ArrayList<User>();
 	private ObjectMapper mapper = new ObjectMapper();
 	private GestioneJson IOJson = new GestioneJson();
@@ -37,36 +36,27 @@ public class Registrazione
 		this.ruolo=ruolo;
 	}
 	
-	public boolean registra(User user)
-	{
-		users=IOJson.leggiJsonUser(1);
-		boolean check=false;
-		
-		if (users.isEmpty())
-		{
-			users.add(user);
-			IOJson.aggiornaJsonUser(users, 1);
-			check= true;
-		}
-		else
-		{
-			for (User appoggio : users)
-			{
-				if(user.getCognome()==appoggio.getCognome())
-				{
-					check= false;
-				}
-				else
-				{						
-					users.add(user);
-					IOJson.aggiornaJsonUser(users, 1);
-					check= true;
-					
-				}
-			}
-		}
-		return check;
+	public boolean registra(User user) {
+	    users = IOJson.leggiJsonUser(1);
+
+	    // Controllo username duplicato PRIMA di assegnare ID
+	    for (User u : users) {
+	        if (u.getUsername().equalsIgnoreCase(user.getUsername())) {
+	            // utente già registrato
+	            return false;
+	        }
+	    }
+
+	    // Assegno ID unico SOLO se l'utente è nuovo
+	    int nuovoId = users.stream().mapToInt(User::getId).max().orElse(0) + 1;
+	    user.setId(nuovoId);
+
+	    users.add(user);
+	    IOJson.aggiornaJsonUser(users, 1);
+
+	    return true;
 	}
+
 
 	public String getNome() {
 		return nome;

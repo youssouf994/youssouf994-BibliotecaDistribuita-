@@ -7,6 +7,7 @@ import java.util.*;
 public class Ricerca extends GestioneCollezione
 {	
 	private List<Item> listaCollezione = new ArrayList<>();
+	private int dimensioneCollezione=listaCollezione.size();
 	
 	public Ricerca(List<Item>lista)
 	{
@@ -80,4 +81,9 @@ public class Ricerca extends GestioneCollezione
 		}
 	}
 
+	private void syncData()
+	{
+		this.listaCollezione=super.getCollezione();
+		this.dimensioneCollezione=this.listaCollezione.size();
+	}
 }

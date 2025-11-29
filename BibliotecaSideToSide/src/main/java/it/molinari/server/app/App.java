@@ -12,14 +12,19 @@ public class App
 {
     public static void main( String[] args ) throws IOException
     {
-        GestioneConnessione socket = new GestioneConnessione();
         
+    	GestioneConnessione socket = new GestioneConnessione();
         try
         {
         	while(true)
         	{
-        		socket.apriStreamDaClient();
+        		socket.payload();
+        		break;
         	}
+        }
+        catch(IOException e)
+        {
+        	System.out.println(e);
         }
         
     } 

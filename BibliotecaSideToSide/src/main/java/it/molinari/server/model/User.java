@@ -7,17 +7,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-@JsonTypeInfo(
-	    use = JsonTypeInfo.Id.NAME,
-	    include = JsonTypeInfo.As.PROPERTY,
-	    property = "@classe"
-	)
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class User 
 {
 	private int id;
-	private String nome, cognome, username, pass, classe;
+	private String nome, cognome, username, pass;
 	private List<Item> listisInprestito = new ArrayList<>();
 	private boolean ruolo;
 	
@@ -41,13 +35,12 @@ public class User
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("User {\n");
-	    sb.append("  id: ").append(id).append(",\n");
+	    sb.append("  id: ").append(this.id).append(",\n");
 	    sb.append("  nome: ").append(nome).append(",\n");
 	    sb.append("  cognome: ").append(cognome).append(",\n");
 	    sb.append("  username: ").append(username).append(",\n");
 	    sb.append("  pass: ").append(pass).append(",\n");
 	    sb.append("  ruolo: ").append(ruolo).append(",\n");
-	    sb.append("  classe: ").append(classe).append(",\n");
 	    sb.append("  listisInprestito: [\n");
 	    
 	    if (listisInprestito != null) {
@@ -88,14 +81,6 @@ public class User
 	}
 
 	
-	
-	public String getClasse() {
-		return classe;
-	}
-
-	public void setClasse(String classe) {
-		this.classe = classe;
-	}
 
 	public String getUsername() {
 		return username;

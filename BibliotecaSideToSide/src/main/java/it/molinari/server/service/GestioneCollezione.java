@@ -8,15 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class GestioneCollezione 
 {
 	private Item item;
 	Scanner cin = new Scanner(System.in);
 	protected List<Item> listaCollezione = new ArrayList<>();
 	protected int dimensioneCollezione=listaCollezione.size();
-	private GestioneJson leggiFile = new GestioneJson();
-	
 	
 	public GestioneCollezione()
 	{
@@ -75,14 +72,10 @@ public class GestioneCollezione
 	
 	public List<Item> getCollezione()
 	{
+		GestioneJson streamFile = new GestioneJson();
+		listaCollezione=streamFile.leggiJson(0);
 		return listaCollezione;
 	}
-	
-	public void setCollezione(List<Item> lista)
-	{
-		this.listaCollezione=lista;
-	}
-	
 	
 	public void segnalaRitardo()
 	{
@@ -90,15 +83,14 @@ public class GestioneCollezione
 
 	        for (Item e : this.listaCollezione) 
 	        {
-	            if (e.getIsPrestato() && e.getOrarioPrestito() != null) 
+	            if (e.isPrestato && e.orarioPrestito != null) 
 	            {
-	                long minutiTrascorsi = Duration.between(e.getOrarioPrestito(), oraAttuale).toMinutes();
+	                long minutiTrascorsi = Duration.between(e.orarioPrestito, oraAttuale).toMinutes();
 
-	                if (minutiTrascorsi > 1) 
+	                if (minutiTrascorsi > 10) 
 	                {
 	                    System.out.println("⚠️ ATTENZIONE: L'item \"" + e.toString() + "\" è in ritardo di " 
 	                                       + minutiTrascorsi + " minuti.");
-	                break;
 	                }
 	            }
 	        }
@@ -106,23 +98,19 @@ public class GestioneCollezione
 	
 	public void visualizzaCollezione()
 	{
-		if(this.listaCollezione.size()>0)
+		if(this.listaCollezione!=null)
 		{
 			for (Item e : this.listaCollezione)
 			{
 				System.out.print(e.toString());
 			}
 		}
-		else
-		{
-			System.out.println("non c'è nessun articolo in archivio");
-		}
 	}
 	
 	
 	public void daiInPrestito()
 	{
-		if(this.listaCollezione.size()<1)
+		if(this.dimensioneCollezione<1)
 		{
 			System.out.println("La collezione è vuota");
 		}
@@ -160,7 +148,7 @@ public class GestioneCollezione
 	
 	public void ritornaPrestito()
 	{
-		if(this.listaCollezione.size() <1)
+		if(dimensioneCollezione<1)
 		{
 			System.out.println("La collezione è vuota");
 		}
@@ -194,10 +182,35 @@ public class GestioneCollezione
 		}
 	}
 	
-	public void caricaArchivioJson() 
-	{
-		this.setCollezione(leggiFile.leggiJson(0));
-    	}
+	public void aggiungiItemDiTest() {
+	    listaCollezione.add(new Libro(
+	        "1984", "George Orwell", false, null,
+	        "ISIN123", "Distopia", 328, listaCollezione.size(), "Libro", null));
+
+	    listaCollezione.add(new Libro(
+	        "Il nome della rosa", "Umberto Eco", false, null,
+	        "ISIN456", "Giallo storico", 550, listaCollezione.size(), "Libro", null));
+
+	    listaCollezione.add(new Rivista(
+	        "National Geographic", "AA.VV.", false, null,
+	        "Ottobre 2023", "Mensile", listaCollezione.size(), "Rivista", null));
+
+	    listaCollezione.add(new Rivista(
+	        "Focus", "AA.VV.", false, null,
+	        "Settembre 2023", "Mensile", listaCollezione.size(), "Rivista", null));
+
+	    listaCollezione.add(new Cd(
+	        "Greatest Hits", "Queen", false, null,
+	        17, 70, listaCollezione.size(), "Cd", null));
+
+	    listaCollezione.add(new Cd(
+	        "Abbey Road", "The Beatles", false, null,
+	        16, 47, listaCollezione.size(), "Cd", null));
+
+	    this.dimensioneCollezione = listaCollezione.size();
+
+	    System.out.println("✅ 6 oggetti di test inseriti con successo (nessun prestito attivo).");
+	}
 
 
 }

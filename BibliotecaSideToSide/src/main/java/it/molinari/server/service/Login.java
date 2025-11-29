@@ -12,9 +12,8 @@ import it.molinari.server.enums.ActionType;
 public class Login 
 {
 	private String username, password, token;
-	private String actionType=ActionType.LOGIN.getAzione();
+	private ActionType actionType=ActionType.LOGIN_RESPONSE;
 	private List<User> users = new ArrayList<User>();
-	private ObjectMapper mapper = new ObjectMapper();
 	private GestioneJson IOJson = new GestioneJson();
 	
 	
@@ -31,9 +30,26 @@ public class Login
 		this.password=user.getPass();
 	}
 	
-	public void provaLogin(String user, String pass)
+	public boolean provaLogin(User user)
 	{
 		users=IOJson.leggiJsonUser(1);
+		boolean check= false;
+		
+		// Controllo username duplicato PRIMA di assegnare ID
+	    for (User u : users) 
+	    {
+	        if (u.getUsername().equals(user.getUsername()) && u.getPass().equals(user.getPass()))// utente già registrato
+	        {       
+	            check=true;
+	            break;
+	        }
+	        else
+        	{
+	        	check=false;
+        	}
+	    }
+	    
+	    return check;
 	}
 	
 }

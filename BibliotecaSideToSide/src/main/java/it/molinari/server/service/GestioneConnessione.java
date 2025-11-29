@@ -13,9 +13,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,20 +24,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneConnessione 
 {
-	private static final int PORT=1053;
+	private static final int PORT=1050;
 	ServerSocket serverSocket;
 	Socket clientSocket=null;//abbinamento per il client
 	BufferedReader inputDaClient= null;
 	PrintWriter cout=null;
 	private String str;
-	
-	private ActionType actionType;
-	private Login login = new Login();
-	private GestioneJson IOJson = new GestioneJson();
+	String serverResponse;
 	private ObjectMapper mapper = new ObjectMapper();
 	private GeneratoreJson converter =new GeneratoreJson();
 	private Tokenizer tokenizer = new Tokenizer();
-	
+	List<Object> lista = new ArrayList<Object>();
+	ActionType actionType;
+	GestioneCollezione engine = new GestioneCollezione();
 	
 
 	
@@ -87,7 +85,7 @@ public class GestioneConnessione
 	            System.out.println("In attesa di dati dal client...");
 	            this.str = this.inputDaClient.readLine();
 	            
-	            // DEBUG - FONDAMENTALE
+	            // DEBUG
 	            System.out.println("=== SERVER RICEVUTO ===");
 	            System.out.println("Stringa ricevuta: [" + this.str + "]");
 	            System.out.println("Lunghezza: " + (this.str != null ? this.str.length() : "null"));
@@ -113,6 +111,7 @@ public class GestioneConnessione
 	            {
 	                System.out.println("Tentativo di deserializzazione JSON...");
 	                converter = mapper.readValue(this.str, GeneratoreJson.class);
+	                this.lista = converter.getListaData() ;
 	                System.out.println("JSON deserializzato con successo!\n"+converter.getListaData());
 	            } 
 	            catch (Exception e) 
@@ -124,40 +123,68 @@ public class GestioneConnessione
 	                continue;
 	            }
 
-	            String serverResponse;
+	            
 
 	            // Gestione azioni
 	            System.out.println("ActionType ricevuto: " + converter.getActionType());
 	            switch (converter.getActionType()) 
 	            {
-		            /*case "LOGIN":
-		                Token tk = tokenizer.getToken();
-		                String username = ((User) pacchettatore.getData()).getUsername();
+		            case LOGIN_REQUEST:
+		            	Login login = new Login();
+		            	String userJson = mapper.writeValueAsString(lista.get(0));
+		                User utente = mapper.readValue(userJson, User.class);
 		                
-		                // Formato: CODICE\tMESSAGGIO\tTOKEN\tACTION\tDATI
-		                serverResponse = HttpStatus.OK.getCodice() + "\t" +
-		                                HttpStatus.OK.getMessaggio() + "\t" +
-		                                tk.getToken() + "\t" +
-		                                "LOGIN" + "\t" +
-		                                "User: " + username;
-		                break;*/
-	
-		            case "REGISTRAZIONE":
-		            	List<Object> lista = converter.getListaData() ;
-		            	
-		                Token tkReg = tokenizer.getToken();
-		                User nuovoUtente =mapper.convertValue(lista.get(0), User.class);
-		                Registrazione registrazione= new Registrazione();
-		                
-		                if(registrazione.registra(nuovoUtente)==true)
+		                if(login.provaLogin(utente)==true)
 		                {
-		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType();
+		                	converter.setActionType(actionType.LOGIN_RESPONSE);
+		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
 		                }
 		                else
 		                {
+		                	converter.setActionType(actionType.LOGIN_RESPONSE);
+		                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                }
+		                break;
+	
+		            case REGISTRATION_REQUEST:
+		            	
+		            	
+		            	Token tkReg = tokenizer.getToken();
+		            	userJson = mapper.writeValueAsString(lista.get(0));//da cancellare?
+		                User nuovoUtente = mapper.readValue(userJson, User.class);
+
+		                Registrazione registrazione= new Registrazione();
+		                userJson = mapper.writeValueAsString(nuovoUtente);
+		                
+		                if(registrazione.registra(nuovoUtente)==true)
+		                {
+		                	converter.setActionType(actionType.REGISTRATION_RESPONSE);
+		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                }
+		                else
+		                {
+		                	converter.setActionType(actionType.REGISTRATION_RESPONSE);
 		                	serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" +HttpStatus.BAD_REQUEST.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType();
 		                }
 		                break;
+		                
+		            case GET_BOOKS_REQUEST:
+		            	//aggiungi un ifintoken=true per accedere
+		            	lista.removeAll(lista);
+		            	lista.add(engine.getCollezione());
+		            	userJson=converter.listToString(lista);
+		            	
+		            	if(userJson!=null)
+		            	{
+		            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
+		            		serverResponse= HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		            	}
+		            	else
+		            	{
+		            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
+		                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		            	}
+		            	break;
 	
 		            default:
 		            	serverResponse = HttpStatus.INTERNAL_ERROR.getCodice() + "\t" +HttpStatus.INTERNAL_ERROR.getMessaggio()  +  converter.getActionType();
@@ -169,7 +196,7 @@ public class GestioneConnessione
 		        this.cout.flush();
 	        }
 	    } 
-	    catch (Exception e) 
+	    catch (IOException e) 
 	    {
 	        System.out.println("ERRORE GRAVE nel payload:");
 	        System.out.println(HttpStatus.BAD_REQUEST.getCodice() + " " + HttpStatus.BAD_REQUEST.getMessaggio());
@@ -177,8 +204,9 @@ public class GestioneConnessione
 	    } 
 	    finally 
 	    {
+	    	lista.removeAll(lista);
 	        System.out.println("Chiusura streams...");
-	        chiudiStreams();
+	        //chiudiStreams();
 	    }
 	}
 	

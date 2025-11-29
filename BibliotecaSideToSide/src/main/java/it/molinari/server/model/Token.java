@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Token 
 {
 	private String Token, classe;
-	private int id;
+
 
 	public Token()
 	{
@@ -30,10 +30,6 @@ public class Token
 	public void setToken(String token) {
 		Token = token;
 	}
-
-	public int getId() {
-		return id;
-	}
 	
 	
 
@@ -45,9 +41,6 @@ public class Token
 		this.classe = classe;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
 	
 	
 }

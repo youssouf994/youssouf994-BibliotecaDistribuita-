@@ -1,9 +1,9 @@
 package it.molinari.server.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.molinari.server.enums.*;
@@ -18,7 +18,8 @@ public class GeneratoreJson
 
     public GeneratoreJson() { }
 
-    public GeneratoreJson(String token, ActionType actionType, List<Object> data) {
+    public GeneratoreJson(String token, ActionType actionType, List<Object> data) 
+    {
         this.token = token;
         this.actionType = actionType;
         this.listaData = data;
@@ -42,7 +43,7 @@ public class GeneratoreJson
         {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerSubtypes(User.class, Cd.class, Item.class, Rivista.class, Libro.class, Token.class);
-            // registra i sottotipi se vuoi sicurezza aggiuntiva
+         
             mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
             
             // deserializza il JSON in GeneratoreJson (polimorfismo attivo)
@@ -56,6 +57,15 @@ public class GeneratoreJson
             e.printStackTrace();
             return null;
         }
+    }
+    
+    public String listToString(List<Object> lista) throws IOException
+    {
+    	String json;
+    	ObjectMapper mapper = new ObjectMapper();
+    	mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    	json=mapper.writeValueAsString(lista);
+    	return json;
     }
 
 
@@ -87,8 +97,8 @@ public class GeneratoreJson
         this.token = token; 
     }
 
-    public String getActionType() {
-        return actionType.getAzione(); 
+    public ActionType getActionType() {
+        return this.actionType; 
     }
     
     

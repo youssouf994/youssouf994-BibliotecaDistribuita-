@@ -7,7 +7,7 @@ public class Libro extends Item
 {
 	public String isin, genere;
 	public int numPag;
-	private int id;
+
 	
 	public Libro()
 	{
@@ -77,13 +77,6 @@ public class Libro extends Item
 		 this.numPag = numPag;
 	 }
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 	 
 	 
 	

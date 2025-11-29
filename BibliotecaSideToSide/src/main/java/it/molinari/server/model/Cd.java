@@ -8,8 +8,17 @@ public class Cd extends Item
 {
 	public int numTracce, durata;
 	private int id;
+
 	
 	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public Cd()
 	{
@@ -70,11 +79,5 @@ public class Cd extends Item
 		 this.durata = durata;
 	 }
 	 
-	 public int getId() {
-			return id;
-		}
 
-		public void setId(int id) {
-			this.id = id;
-		}
 }
