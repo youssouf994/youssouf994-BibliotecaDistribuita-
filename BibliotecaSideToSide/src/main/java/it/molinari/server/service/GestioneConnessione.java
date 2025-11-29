@@ -31,6 +31,7 @@ public class GestioneConnessione
 	PrintWriter cout=null;
 	private String str;
 	String serverResponse;
+	String userJson;
 	private ObjectMapper mapper = new ObjectMapper();
 	private GeneratoreJson converter =new GeneratoreJson();
 	private Tokenizer tokenizer = new Tokenizer();
@@ -131,25 +132,26 @@ public class GestioneConnessione
 	            {
 		            case LOGIN_REQUEST:
 		            	Login login = new Login();
-		            	String userJson = mapper.writeValueAsString(lista.get(0));
+		            	userJson = mapper.writeValueAsString(lista.get(0));
 		                User utente = mapper.readValue(userJson, User.class);
 		                
 		                if(login.provaLogin(utente)==true)
 		                {
+		                	converter.setToken(tokenizer.getToken());
 		                	converter.setActionType(actionType.LOGIN_RESPONSE);
-		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +converter.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
 		                }
 		                else
 		                {
 		                	converter.setActionType(actionType.LOGIN_RESPONSE);
-		                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +converter.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
 		                }
 		                break;
 	
 		            case REGISTRATION_REQUEST:
 		            	
 		            	
-		            	Token tkReg = tokenizer.getToken();
+		            	converter.setToken(tokenizer.getToken());
 		            	userJson = mapper.writeValueAsString(lista.get(0));//da cancellare?
 		                User nuovoUtente = mapper.readValue(userJson, User.class);
 
@@ -159,30 +161,37 @@ public class GestioneConnessione
 		                if(registrazione.registra(nuovoUtente)==true)
 		                {
 		                	converter.setActionType(actionType.REGISTRATION_RESPONSE);
-		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                	serverResponse = HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +converter.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
 		                }
 		                else
 		                {
 		                	converter.setActionType(actionType.REGISTRATION_RESPONSE);
-		                	serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" +HttpStatus.BAD_REQUEST.getMessaggio() + "\t" +tkReg.getToken() + "\t" + converter.getActionType();
+		                	serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" +HttpStatus.BAD_REQUEST.getMessaggio() + "\t" +converter.getToken() + "\t" + converter.getActionType();
 		                }
 		                break;
 		                
 		            case GET_BOOKS_REQUEST:
-		            	//aggiungi un ifintoken=true per accedere
-		            	lista.removeAll(lista);
-		            	lista.add(engine.getCollezione());
-		            	userJson=converter.listToString(lista);
-		            	
-		            	if(userJson!=null)
+		            	if(tokenizer.isInSession(converter.getToken())==true)
 		            	{
-		            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
-		            		serverResponse= HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+			            	lista.removeAll(lista);
+			            	lista.add(engine.getCollezione());
+			            	userJson=converter.listToString(lista);
+			            	
+			            	if(userJson!=null)
+			            	{
+			            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
+			            		serverResponse= HttpStatus.OK.getCodice() + "\t" +HttpStatus.OK.getMessaggio() + "\t" +converter.getToken()+ "\t" + converter.getActionType()+"\t "+userJson;
+			            	}
+			            	else
+			            	{
+			            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
+			                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +converter.getToken()+ "\t" + converter.getActionType()+"\t "+userJson;
+			            	}
 		            	}
 		            	else
 		            	{
 		            		converter.setActionType(actionType.GET_BOOKS_RESPONSE);
-		                	serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" +HttpStatus.NOT_FOUND.getMessaggio() + "\t" +tokenizer.getToken().getToken() + "\t" + converter.getActionType()+"\t "+userJson;
+		                	serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" +HttpStatus.BAD_REQUEST.getMessaggio() + "\t" +converter.getToken() + "\t" + converter.getActionType()+"\t "+userJson;
 		            	}
 		            	break;
 	

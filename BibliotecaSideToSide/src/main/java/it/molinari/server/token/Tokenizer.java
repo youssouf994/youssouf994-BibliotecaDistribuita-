@@ -11,15 +11,15 @@ public class Tokenizer
     private static final SecureRandom random = new SecureRandom();
     private String token;
     private List<Token> listaToken = new ArrayList<Token>();
-    private boolean isNuovo;
-    private GestioneJson IOJson = new GestioneJson();
+    private boolean isInSession;
+    private GestioneJson converter = new GestioneJson();
     
 	public Tokenizer()
 	{
 		
 	}
 	
-	private Token generaToken()
+	private String generaToken()
 	{
 		Token tk = new Token();
 		String nuovoToken;
@@ -35,7 +35,7 @@ public class Tokenizer
 	        nuovoToken = tokenBuilder.toString();
 	        
 	        // Leggi la lista dei token esistenti
-	        this.listaToken = IOJson.leggiJsonToken(3);
+	        this.listaToken = converter.leggiJson(3, Token.class);
 	        
 	        // Controlla se il token esiste già
 	        boolean tokenEsiste = false;
@@ -53,16 +53,67 @@ public class Tokenizer
 	        
 	        // Se il token è unico, esci dal loop
 	        if (!tokenEsiste) {
-	        	tk.setToken(nuovoToken);
+	        	this.token=nuovoToken;
 	        	break;
 	        }
 		}
 		
-        return tk;
+        return this.token;
 	}
 	
-	public Token getToken() {
-		return this.generaToken();
+	public boolean isInSession(String token) 
+	{
+	    this.listaToken = converter.leggiJson(3, Token.class);
+	    
+	    if (this.listaToken != null) 
+	    {
+	        for (Token app : this.listaToken) 
+	        {
+	            if (app.getToken() != null && app.getToken().equalsIgnoreCase(token)) 
+	            {
+	                return true; 
+	            }
+	            else
+	            {
+	            	return false;
+	            }
+	        }
+	    }
+	    return false; // non trovato
+	}
+
+	
+	public boolean cancellaToken(String Token)
+	{
+		this.listaToken=converter.leggiJson(3, Token.class);
+		int i=0;
+			
+		if(this.listaToken!=null)
+		{
+			for(i=0; i<listaToken.size();i++)
+			{
+				if(listaToken.get(i).getToken().equalsIgnoreCase(Token))
+				{
+					listaToken.remove(i);
+					this.isInSession=true;
+					break;
+				}
+				else
+				{
+					this.isInSession=false;
+				}
+			}
+		}
+		else
+		{
+			System.out.println("lista vuota");
+		}
+			return this.isInSession;
+	}
+	
+	public String getToken() 
+	{
+		return this.token=this.generaToken();
 	}
 	
 	public void setToken(String token) {

@@ -14,6 +14,7 @@ public class GestioneCollezione
 	Scanner cin = new Scanner(System.in);
 	protected List<Item> listaCollezione = new ArrayList<>();
 	protected int dimensioneCollezione=listaCollezione.size();
+	GestioneJson streamFile = new GestioneJson();
 	
 	public GestioneCollezione()
 	{
@@ -23,6 +24,7 @@ public class GestioneCollezione
 	
 	public void aggiungiItem()
 	{		
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		if(this.listaCollezione != null)
 		{
 			System.out.println("Che tipo vuoi inserire? (1 = Libro, 2 = Rivista, 3 = Cd)");
@@ -58,6 +60,7 @@ public class GestioneCollezione
 	
 	public void cancellaItem(int codice)
 	{
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		int i;
 		for (i=0;i<listaCollezione.size();i++)
 		{
@@ -72,14 +75,14 @@ public class GestioneCollezione
 	
 	public List<Item> getCollezione()
 	{
-		GestioneJson streamFile = new GestioneJson();
-		listaCollezione=streamFile.leggiJson(0);
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		return listaCollezione;
 	}
 	
 	public void segnalaRitardo()
 	{
-		 LocalTime oraAttuale = LocalTime.now();
+		listaCollezione=streamFile.leggiJson(0, Item.class);
+		LocalTime oraAttuale = LocalTime.now();
 
 	        for (Item e : this.listaCollezione) 
 	        {
@@ -98,6 +101,7 @@ public class GestioneCollezione
 	
 	public void visualizzaCollezione()
 	{
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		if(this.listaCollezione!=null)
 		{
 			for (Item e : this.listaCollezione)
@@ -110,6 +114,7 @@ public class GestioneCollezione
 	
 	public void daiInPrestito()
 	{
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		if(this.dimensioneCollezione<1)
 		{
 			System.out.println("La collezione è vuota");
@@ -148,6 +153,7 @@ public class GestioneCollezione
 	
 	public void ritornaPrestito()
 	{
+		listaCollezione=streamFile.leggiJson(0, Item.class);
 		if(dimensioneCollezione<1)
 		{
 			System.out.println("La collezione è vuota");
@@ -181,36 +187,5 @@ public class GestioneCollezione
 			 
 		}
 	}
-	
-	public void aggiungiItemDiTest() {
-	    listaCollezione.add(new Libro(
-	        "1984", "George Orwell", false, null,
-	        "ISIN123", "Distopia", 328, listaCollezione.size(), "Libro", null));
-
-	    listaCollezione.add(new Libro(
-	        "Il nome della rosa", "Umberto Eco", false, null,
-	        "ISIN456", "Giallo storico", 550, listaCollezione.size(), "Libro", null));
-
-	    listaCollezione.add(new Rivista(
-	        "National Geographic", "AA.VV.", false, null,
-	        "Ottobre 2023", "Mensile", listaCollezione.size(), "Rivista", null));
-
-	    listaCollezione.add(new Rivista(
-	        "Focus", "AA.VV.", false, null,
-	        "Settembre 2023", "Mensile", listaCollezione.size(), "Rivista", null));
-
-	    listaCollezione.add(new Cd(
-	        "Greatest Hits", "Queen", false, null,
-	        17, 70, listaCollezione.size(), "Cd", null));
-
-	    listaCollezione.add(new Cd(
-	        "Abbey Road", "The Beatles", false, null,
-	        16, 47, listaCollezione.size(), "Cd", null));
-
-	    this.dimensioneCollezione = listaCollezione.size();
-
-	    System.out.println("✅ 6 oggetti di test inseriti con successo (nessun prestito attivo).");
-	}
-
 
 }

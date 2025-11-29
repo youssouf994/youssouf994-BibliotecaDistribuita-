@@ -37,7 +37,7 @@ public class Registrazione
 	}
 	
 	public boolean registra(User user) {
-	    users = IOJson.leggiJsonUser(1);
+	    users = IOJson.leggiJson(1, User.class);
 
 	    // Controllo username duplicato PRIMA di assegnare ID
 	    for (User u : users) {
@@ -52,7 +52,7 @@ public class Registrazione
 	    user.setId(nuovoId);
 
 	    users.add(user);
-	    IOJson.aggiornaJsonUser(users, 1);
+	    IOJson.scriviJson(1, users);
 
 	    return true;
 	}

@@ -32,7 +32,7 @@ public class Login
 	
 	public boolean provaLogin(User user)
 	{
-		users=IOJson.leggiJsonUser(1);
+		users=IOJson.leggiJson(1, User.class);
 		boolean check= false;
 		
 		// Controllo username duplicato PRIMA di assegnare ID

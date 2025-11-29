@@ -69,11 +69,11 @@ public class TestGestConnessione {
 
             // Creo user
             User user = new User(
-                    0, "Mari", "Rossi", "youss125", "password123", prestiti, false);
+                    0, "Mari", "Rossi", "youss2", "password123", prestiti, false);
 
             // Creo wrapper con token e action
-            String token = "";
-            actionType = ActionType.GET_BOOKS_REQUEST;
+            String token = "ajhg23jh";
+            actionType = ActionType.LOGIN_REQUEST;
             
             oggettoMittente.add(user);
 
@@ -97,11 +97,12 @@ public class TestGestConnessione {
             client.setSoTimeout(5000);
             
             String response = in.readLine();
+            String[] parts=null;
             
             System.out.println("=== CLIENT - RISPOSTA RICEVUTA ===");
             if (response != null) {
                 // Parse della risposta formato: CODICE\tMESSAGGIO\tTOKEN\tACTION\tDATI
-                String[] parts = response.split("\t");
+            	parts= response.split("\t");
                 
                 System.out.println("Codice Stato: " + (parts.length > 0 ? parts[0] : "N/A"));
                 System.out.println("Messaggio: " + (parts.length > 1 ? parts[1] : "N/A"));
@@ -113,6 +114,13 @@ public class TestGestConnessione {
             }
             System.out.println();
 
+            actionType = ActionType.GET_BOOKS_REQUEST;
+            token=parts[2];
+            oggettoMittente.remove(oggettoMittente);
+            json = mapper.writeValueAsString(request.getOggettoRequest(token, actionType, oggettoMittente)).replace("\n", "").replace("\r", "");
+            out.println(json);
+            out.flush();
+            
             // Chiudi la connessione
             out.println("end)");
             out.flush();
