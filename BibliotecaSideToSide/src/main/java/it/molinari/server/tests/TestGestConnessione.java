@@ -1,140 +1,96 @@
 package it.molinari.server.tests;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import it.molinari.server.enums.ActionType;
-import it.molinari.server.model.*;
+import it.molinari.server.model.Item;
+import it.molinari.server.model.ItemPrestato;
+import it.molinari.server.model.User;
 import it.molinari.server.service.GeneratoreJson;
-import it.molinari.server.service.GestioneConnessione;
 
 public class TestGestConnessione {
 
     public static void main(String[] args) {
-
-        ActionType actionType;
-
         try {
-            // Avvio del server in un thread separato
-            Thread serverThread = new Thread(() -> {
+            // Avvio server in thread separato
+            new Thread(() -> {
                 try {
-                    GestioneConnessione gc = new GestioneConnessione();
-                    gc.payload();
+                    new it.molinari.server.service.GestioneConnessione().payload();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
-            serverThread.start();
+            }).start();
 
-            // Attesa per permettere al server di avviarsi
-            Thread.sleep(1000);
+            Thread.sleep(1000); // aspetta che il server sia pronto
 
-            // === CLIENT SOCKET ===
-            Socket client = new Socket("localhost", 1050);
+            // === CLIENT ===
+            Socket client = new Socket("localhost", 1051);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            List<Object> oggettoMittente = new ArrayList<Object>();
 
-            // JACKSON
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            // Creo un utente valido per il login
+            User user = new User();
+            user.setUsername("teowee");      // username che il server riconosce
+            user.setPassword("1235"); 
+            user.setCognome("sdf");
+            user.setNome("sjbds");
+            user.setRuolo(false);
             
-
-            // === CREO UN ITEM DI ESEMPIO ===
-            Item item = new Cd(
-                    "Raggata the blanc",
-                    "The Police",
-                    false,
-                    "utente1",
-                    16,
-                    120,
-                    5,
-                    "Cd",
-                    LocalTime.now()
-            );
-
-            List<Item> prestiti = new ArrayList<>();
-            //prestiti.add(item);
-
-            // Creo user
-            User user = new User(
-                    0, "Mari", "Rossi", "youss2", "password123", prestiti, false);
-
-            // Creo wrapper con token e action
-            String token = "ajhg23jh";
-            actionType = ActionType.LOGIN_REQUEST;
+            Item item = new Item();
+            item.setNome("Il Signore degli Anelli");
+          
+            item.setId(1);
+            item.setTipologia("Libro");
+            ItemPrestato itemPrestato= new ItemPrestato();
+            itemPrestato.setNome(user.getNome());
+            itemPrestato.setCognome(user.getCognome());
+            itemPrestato.setInizioPrestito(LocalDate.now().toString());
+            itemPrestato.setId(1);
+            itemPrestato.setTipologia("ItemPrestato");
+            itemPrestato.setQuanti(4);
+            itemPrestato.setItem(item);
             
-            oggettoMittente.add(user);
+            List<Object> lista = new ArrayList<>();
+            //lista.add(user);
+            lista.add(itemPrestato);
+
+            // Token vuoto per login iniziale
+            String token = "IWG3Ua7BGD";
 
             GeneratoreJson request = new GeneratoreJson();
-            
-            
+            String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.BORROW_ITEM_REQUEST, lista));
 
-            // Serializzo tutto in JSON su una sola linea
-            String json = mapper.writeValueAsString(request.getOggettoRequest(token, actionType, oggettoMittente)).replace("\n", "").replace("\r", "");
-
-            // === OUTPUT CLIENT ===
-            System.out.println("=== CLIENT - JSON INVIATO ===");
+            System.out.println("=== CLIENT - INVIO LOGIN_REQUEST ===");
             System.out.println(json);
-            System.out.println();
 
-            // Invio al server
             out.println(json);
             out.flush();
 
-            // Attendi la risposta con timeout
-            client.setSoTimeout(5000);
-            
+            // Ricevo la risposta
             String response = in.readLine();
-            String[] parts=null;
-            
-            System.out.println("=== CLIENT - RISPOSTA RICEVUTA ===");
-            if (response != null) {
-                // Parse della risposta formato: CODICE\tMESSAGGIO\tTOKEN\tACTION\tDATI
-            	parts= response.split("\t");
-                
-                System.out.println("Codice Stato: " + (parts.length > 0 ? parts[0] : "N/A"));
-                System.out.println("Messaggio: " + (parts.length > 1 ? parts[1] : "N/A"));
-                System.out.println("Token: " + (parts.length > 2 ? parts[2] : "N/A"));
-                System.out.println("Action Type: " + (parts.length > 3 ? parts[3] : "N/A"));
-                System.out.println("Dati: " + (parts.length > 4 ? parts[4] : "N/A"));
-            } else {
-                System.out.println("ERRORE: Nessuna risposta dal server!");
-            }
-            System.out.println();
+            System.out.println("=== CLIENT - RISPOSTA ===");
+            System.out.println(response);
 
-            actionType = ActionType.GET_BOOKS_REQUEST;
-            token=parts[2];
-            oggettoMittente.remove(oggettoMittente);
-            json = mapper.writeValueAsString(request.getOggettoRequest(token, actionType, oggettoMittente)).replace("\n", "").replace("\r", "");
-            out.println(json);
-            out.flush();
-            
-            // Chiudi la connessione
+            // Chiudo connessione
             out.println("end)");
             out.flush();
 
-            String finalResponse = in.readLine();
-            System.out.println("=== CLIENT - CONFERMA CHIUSURA ===");
-            if (finalResponse != null) {
-                System.out.println(finalResponse);
-            }
-
             client.close();
-            
+
         } catch (Exception e) {
-            System.out.println("ERRORE nel client:");
             e.printStackTrace();
         }
     }

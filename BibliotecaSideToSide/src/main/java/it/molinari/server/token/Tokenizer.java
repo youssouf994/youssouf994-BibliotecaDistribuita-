@@ -21,49 +21,59 @@ public class Tokenizer
 	
 	private String generaToken()
 	{
-		Token tk = new Token();
-		String nuovoToken;
-		
-		while(true)
-		{
-			// Genera un nuovo token
-			StringBuilder tokenBuilder = new StringBuilder(10);
+	    String nuovoToken;
+
+	    // Leggi lista token esistente UNA VOLTA
+	    this.listaToken = converter.leggiJson(3, Token.class);
+	    if (this.listaToken == null) {
+	        this.listaToken = new ArrayList<>();
+	    }
+
+	    while(true)
+	    {
+	        // Genera un nuovo token
+	        StringBuilder tokenBuilder = new StringBuilder(10);
 	        for (int i = 0; i < 10; i++) {
 	            int index = random.nextInt(CHARACTERS.length());
 	            tokenBuilder.append(CHARACTERS.charAt(index));
 	        }
 	        nuovoToken = tokenBuilder.toString();
-	        
-	        // Leggi la lista dei token esistenti
-	        this.listaToken = converter.leggiJson(3, Token.class);
-	        
+
 	        // Controlla se il token esiste già
 	        boolean tokenEsiste = false;
-	        
-	        if (this.listaToken != null && !this.listaToken.isEmpty()) {
-		        for (Token app : this.listaToken)
-		        {
-		        	if(app.getToken() != null && app.getToken().equals(nuovoToken))
-		        	{
-		        		tokenEsiste = true;
-		        		break;
-		        	}
-		        }
+	        for(Token app : this.listaToken)
+	        {
+	            if(app.getToken() != null && app.getToken().equals(nuovoToken))
+	            {
+	                tokenEsiste = false;
+	                break;
+	            }
+	            else
+	            {
+	            	tokenEsiste=true;
+	            	break;
+	            }
 	        }
-	        
-	        // Se il token è unico, esci dal loop
-	        if (!tokenEsiste) {
-	        	this.token=nuovoToken;
-	        	break;
+
+	        // Se è unico, salva e restituisci token
+	        if(tokenEsiste=true)
+	        {
+	            this.token = nuovoToken;
+	            Token nuovoTokenObj = new Token();
+	    	    nuovoTokenObj.setToken(this.token);
+	    	    this.listaToken.add(nuovoTokenObj);
+	    	    converter.scriviJson(3, this.listaToken);
+	            break;
 	        }
-		}
-		
-        return this.token;
+	    }
+	    return this.token;
 	}
+
 	
 	public boolean isInSession(String token) 
 	{
 	    this.listaToken = converter.leggiJson(3, Token.class);
+	    boolean check=false;
 	    
 	    if (this.listaToken != null) 
 	    {
@@ -71,15 +81,16 @@ public class Tokenizer
 	        {
 	            if (app.getToken() != null && app.getToken().equalsIgnoreCase(token)) 
 	            {
-	                return true; 
+	                check=true;
 	            }
 	            else
 	            {
-	            	return false;
+	            	check=false;
 	            }
 	        }
 	    }
-	    return false; // non trovato
+	    
+	    return check;
 	}
 
 	
@@ -113,10 +124,11 @@ public class Tokenizer
 	
 	public String getToken() 
 	{
-		return this.token=this.generaToken();
+		return this.generaToken();
 	}
 	
-	public void setToken(String token) {
-		this.token = token;
+	public void setToken(String token) 
+	{
+		this.token=token;
 	}
 }

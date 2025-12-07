@@ -1,6 +1,5 @@
 package it.molinari.server.model;
 
-import java.time.*;
 import java.util.Scanner;
 
 
@@ -25,11 +24,12 @@ public class Cd extends Item
 		
 	}
 	
-	public Cd(String nome, String autore, boolean isPrestato, String richiedente, int numTracce, int durata, int codice, String tipologia, LocalTime orarioPrestito)
+	public Cd(String nome, String autore, int numTracce, int durata,  String tipologia,  int quanti)
 	{
-		super(nome, autore, isPrestato, richiedente, codice, tipologia, orarioPrestito);
+		super(nome, autore, tipologia, quanti);
 		this.numTracce=numTracce;
 		this.durata=durata;
+		this.quanti=quanti;
 	}
 	
 	@Override
@@ -37,7 +37,8 @@ public class Cd extends Item
 	{
 	    return super.toString() +
 	           "  Tracce         : " + numTracce + "\n" +
-	           "  Durata         : " + durata + " minuti\n";
+	           "  Durata         : " + durata + " minuti\n"+
+	           "  Quantità:		 : "+quanti + "pezzi";	
 	}
 
 
@@ -47,20 +48,18 @@ public class Cd extends Item
 		    String nome = sc.nextLine();
 		    System.out.print("Inserisci autore: ");
 		    String autore = sc.nextLine();
-		    boolean isPrestato = false;
-		    String richiedente = null;
 
 		    System.out.print("Inserisci numero tracce: ");
 		    int numTracce = Integer.parseInt(sc.nextLine());
 		    System.out.print("Inserisci durata (in minuti): ");
 		    int durata = Integer.parseInt(sc.nextLine());
-		    int codice = id;
+		    System.out.print("Quantità inserita: ");
+		    int quanti = Integer.parseInt(sc.nextLine());
+		    
 
 		    String tipologia = "Cd";
-		    LocalTime orarioPrestito = null;
 
-	        return new Cd(nome, autore, isPrestato, richiedente,
-	                      numTracce, durata, codice, tipologia, orarioPrestito);
+	        return new Cd(nome, autore, numTracce, durata, tipologia, quanti);
 	    }
 
 	 public int getNumTracce() {
@@ -78,6 +77,15 @@ public class Cd extends Item
 	 public void setDurata(int durata) {
 		 this.durata = durata;
 	 }
+
+	public int getQuanti() {
+		return quanti;
+	}
+
+	public void setQuanti(int quanti) {
+		this.quanti = quanti;
+	}
+	 
 	 
 
 }

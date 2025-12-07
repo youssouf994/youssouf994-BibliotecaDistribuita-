@@ -11,7 +11,7 @@ import it.molinari.server.model.*;
 
 public class GeneratoreJson 
 {
-    private String token, classe;
+    private String token;
     private ActionType actionType;
     private List<Object> listaData;
     // lista di oggetti generici così posso mischiare user e dati
@@ -25,12 +25,8 @@ public class GeneratoreJson
         this.listaData = data;
     }
 
-    @JsonTypeInfo(
-            use = JsonTypeInfo.Id.CLASS,      // salva il nome completo della classe
-            include = JsonTypeInfo.As.PROPERTY,
-            property = "@classe"               // il campo speciale scritto nel JSON
-    )
-    public static Object getOggettoRequest(String token, ActionType actionType, List<Object> data) {
+
+    public static GeneratoreJson getOggettoRequest(String token, ActionType actionType, List<Object> data) {
         return new GeneratoreJson(token, actionType, data);
     }
 
@@ -42,7 +38,7 @@ public class GeneratoreJson
         try 
         {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.registerSubtypes(User.class, Cd.class, Item.class, Rivista.class, Libro.class, Token.class);
+            mapper.registerSubtypes(User.class, Cd.class, Item.class, Rivista.class, Libro.class, Token.class, ItemPrestato.class);
          
             mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
             
@@ -101,15 +97,6 @@ public class GeneratoreJson
         return this.actionType; 
     }
     
-    
-
-    public String getClasse() {
-		return classe;
-	}
-
-	public void setClasse(String classe) {
-		this.classe = classe;
-	}
 
 	public void setActionType(ActionType actionType) {
         this.actionType = actionType; 

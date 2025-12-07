@@ -1,18 +1,13 @@
 package it.molinari.server.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User 
 {
-	private int id;
-	private String nome, cognome, username, pass;
-	private List<Item> listisInprestito = new ArrayList<>();
+	//private int id;
+	private String nome, cognome, username, password;
+	//private List<Item> listisInprestito = new ArrayList<>();
 	private boolean ruolo;
 	
 	public User() 
@@ -20,14 +15,14 @@ public class User
 		
 	}
 	
-	public User(int id, String nome, String cognome, String username, String password, List<Item> listIsPrestito, boolean ruolo)
+	public User(String nome, String cognome, String username, String password, boolean ruolo)
 	{
-		this.id=id;
+		//this.id=id;
 		this.nome=nome;
 		this.cognome=cognome;
 		this.username=username;
-		this.pass=password;
-		this.listisInprestito=listIsPrestito;
+		this.password=password;
+		//this.listisInprestito=listIsPrestito;
 		this.ruolo=ruolo;
 	}
 	
@@ -35,15 +30,15 @@ public class User
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("User {\n");
-	    sb.append("  id: ").append(this.id).append(",\n");
+	    //sb.append("  id: ").append(this.id).append(",\n");
 	    sb.append("  nome: ").append(nome).append(",\n");
 	    sb.append("  cognome: ").append(cognome).append(",\n");
 	    sb.append("  username: ").append(username).append(",\n");
-	    sb.append("  pass: ").append(pass).append(",\n");
+	    sb.append("  pass: ").append(password).append(",\n");
 	    sb.append("  ruolo: ").append(ruolo).append(",\n");
 	    sb.append("  listisInprestito: [\n");
 	    
-	    if (listisInprestito != null) {
+	    /*if (listisInprestito != null) {
 	        for (Item item : listisInprestito) {
 	            if (item != null) {
 	                sb.append("    ").append(item.toString().replace("\n", "\n    ")).append(",\n");
@@ -51,7 +46,7 @@ public class User
 	                sb.append("    null,\n");
 	            }
 	        }
-	    }
+	    }*/
 	    
 	    sb.append("  ]\n");
 	    sb.append("}");
@@ -59,10 +54,10 @@ public class User
 	}
 
 	
-	public void setId(int id)
+	/*public void setId(int id)
 	{
 		this.id=id;
-	}
+	}*/
 
 	public String getNome() {
 		return nome;
@@ -90,21 +85,21 @@ public class User
 		this.username = username;
 	}
 
-	public String getPass() {
-		return pass;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPass(String pass) {
-		this.pass = pass;
+	public void setPassword(String pass) {
+		this.password = pass;
 	}
 
-	public List<Item> getListisInprestito() {
+	/*public List<Item> getListisInprestito() {
 		return listisInprestito;
 	}
 
 	public void setListisInprestito(List<Item> listisInprestito) {
 		this.listisInprestito = listisInprestito;
-	}
+	}*/
 
 	public boolean isRuolo() {
 		return ruolo;
@@ -114,7 +109,7 @@ public class User
 		this.ruolo = ruolo;
 	}
 
-	public int getId() {
+	/*public int getId() {
 		return id;
-	}
+	}*/
 }

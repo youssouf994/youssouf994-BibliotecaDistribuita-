@@ -1,27 +1,26 @@
 package it.molinari.server.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import it.molinari.server.enums.HttpStatus;
-import it.molinari.server.model.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestioneJson {
+public class GestioneJson 
+{
 
     private final String[] archivi = {
             "src/main/java/it/molinari/server/files/archivio.json", 
             "src/main/java/it/molinari/server/files/users.json", 
             "src/main/java/it/molinari/server/files/whitelist.json", 
-            "src/main/java/it/molinari/server/files/tokens.json"
+            "src/main/java/it/molinari/server/files/tokens.json",
+            "src/main/java/it/molinari/server/files/prestiti.json"
     };
 
-    private final ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     public GestioneJson() {
         mapper = new ObjectMapper();

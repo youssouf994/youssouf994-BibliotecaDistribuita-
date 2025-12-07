@@ -79,25 +79,22 @@ public class GestioneCollezione
 		return listaCollezione;
 	}
 	
-	public void segnalaRitardo()
+	public List<Item> getCollezioneLibri()
 	{
 		listaCollezione=streamFile.leggiJson(0, Item.class);
-		LocalTime oraAttuale = LocalTime.now();
-
-	        for (Item e : this.listaCollezione) 
-	        {
-	            if (e.isPrestato && e.orarioPrestito != null) 
-	            {
-	                long minutiTrascorsi = Duration.between(e.orarioPrestito, oraAttuale).toMinutes();
-
-	                if (minutiTrascorsi > 10) 
-	                {
-	                    System.out.println("⚠️ ATTENZIONE: L'item \"" + e.toString() + "\" è in ritardo di " 
-	                                       + minutiTrascorsi + " minuti.");
-	                }
-	            }
-	        }
+		List<Item> listaappoggio= new ArrayList<Item>();
+		
+		for(Item app : listaCollezione)
+		{
+			if(app.getTipologia().equalsIgnoreCase("libro"))
+			{
+				listaappoggio.add(app);
+			}
+		}
+		return listaappoggio;
 	}
+	
+	
 	
 	public void visualizzaCollezione()
 	{
@@ -112,80 +109,6 @@ public class GestioneCollezione
 	}
 	
 	
-	public void daiInPrestito()
-	{
-		listaCollezione=streamFile.leggiJson(0, Item.class);
-		if(this.dimensioneCollezione<1)
-		{
-			System.out.println("La collezione è vuota");
-		}
-		else
-		{
-			for( Item e: this.listaCollezione)//visualizzo la collezione per scegliere il codice daadare in prestito
-			{
-				if(e.isPrestato==false)
-				{
-					System.out.print(e.toString());
-				}
-			}
-			
-			System.out.println("Inserisci il codice dell'elemento da dare in prestito");
-			int scelta=Integer.parseInt(cin.nextLine());
-			
-			for( Item e: this.listaCollezione)
-			{
-				if(e.codice==scelta)
-				{
-	                System.out.print("Inserisci il nome del richiedente: ");
-	                String nomeRichiedente = cin.nextLine();
-	
-	                e.isPrestato = true;
-	                e.richiedente = nomeRichiedente;
-	                e.orarioPrestito = LocalTime.now();
-	
-	                System.out.println("✅ Prestito registrato con successo!");
-	                System.out.println("Orario del prestito: " + e.orarioPrestito);
-				}
-			}
-			 
-		}
-	}
-	
-	public void ritornaPrestito()
-	{
-		listaCollezione=streamFile.leggiJson(0, Item.class);
-		if(dimensioneCollezione<1)
-		{
-			System.out.println("La collezione è vuota");
-		}
-		else
-		{
-			for( Item e: this.listaCollezione)//visualizzo la collezione per scegliere il codice da ritornare dal prestito
-			{
-				if(e.isPrestato==true)
-				{
-					System.out.print(e.toString());
-				}
-			}
-			
-			System.out.println("Inserisci il codice dell'elemento da ritornare dal prestito");
-			int scelta=Integer.parseInt(cin.nextLine());
-			
-			for( Item e: this.listaCollezione)
-			{
-				if(e.codice==scelta)
-				{
-	
-	                e.isPrestato = false;
-	                e.richiedente = "ritornato";
-	                e.orarioPrestito = LocalTime.now();
-	
-	                System.out.println("✅ Ritornoo registrato con successo!");
-	                System.out.println("Orario del Ritorno: " + e.orarioPrestito);
-				}
-			}
-			 
-		}
-	}
+
 
 }

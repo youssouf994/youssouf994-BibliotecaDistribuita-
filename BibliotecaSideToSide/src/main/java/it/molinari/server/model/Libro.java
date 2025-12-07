@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Libro extends Item
 {
-	public String isin, genere;
-	public int numPag;
+	public String isbn, genere;
+	
 
 	
 	public Libro()
@@ -14,21 +14,20 @@ public class Libro extends Item
 		
 	}
 	
-	public Libro(String nome, String autore, boolean isPrestato, String richiedente, String isin, String genere, int numPag, int codice, String tipologia, LocalTime orarioPrestito)
+	public Libro(String nome, String autore, String isin, String genere, String tipologia, int quanti)
 	{
-		super(nome, autore, isPrestato, richiedente, codice, tipologia, orarioPrestito);
-		this.isin=isin;
+		super(nome, autore, tipologia, quanti);
+		this.isbn=isin;
 		this.genere=genere;
-		this.numPag=numPag;
+		this.quanti=quanti;
 	}
 	
 	@Override
 	public String toString() 
 	{
 	    return super.toString() +
-	           "  ISIN           : " + isin + "\n" +
-	           "  Genere         : " + genere + "\n" +
-	           "  Pagine         : " + numPag + "\n";
+	           "  ISIN           : " + isbn + "\n" +
+	           "  Genere         : " + genere + "\n" ;
 	}
 
 
@@ -37,28 +36,24 @@ public class Libro extends Item
 	        String nome = sc.nextLine();
 	        System.out.print("Inserisci autore: ");
 	        String autore = sc.nextLine();
-	        boolean isPrestato = false;
-	        String richiedente = null;
 	        System.out.print("Inserisci ISIN: ");
 	        String isin = sc.nextLine();
 	        System.out.print("Inserisci genere: ");
 	        String genere = sc.nextLine();
-	        System.out.print("Inserisci numero pagine: ");
-	        int numPag = Integer.parseInt(sc.nextLine());
-	        int codice = id;
+	        System.out.print("quantità inserita: ");
+	        int quanti = Integer.parseInt(sc.nextLine());
 	        String tipologia ="Libro";
-	        LocalTime orarioPrestito = null;
 
-	        return new Libro(nome, autore, isPrestato, richiedente,
-	                         isin, genere, numPag, codice, tipologia, orarioPrestito);
+	        return new Libro(nome, autore,  
+	                         isin, genere, tipologia, quanti);
 	    }
 
-	 public String getIsin() {
-		 return isin;
+	 public String getIsbn() {
+		 return isbn;
 	 }
 
-	 public void setIsin(String isin) {
-		 this.isin = isin;
+	 public void setIsbn(String isin) {
+		 this.isbn = isin;
 	 }
 
 	 public String getGenere() {
@@ -69,13 +64,14 @@ public class Libro extends Item
 		 this.genere = genere;
 	 }
 
-	 public int getNumPag() {
-		 return numPag;
-	 }
 
-	 public void setNumPag(int numPag) {
-		 this.numPag = numPag;
-	 }
+	public int getQuanti() {
+		return quanti;
+	}
+
+	public void setQuanti(int quanti) {
+		this.quanti = quanti;
+	}
 
 	 
 	 

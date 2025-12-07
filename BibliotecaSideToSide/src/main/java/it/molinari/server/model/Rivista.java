@@ -15,11 +15,12 @@ public class Rivista extends Item
 		
 	}
 	
-	public Rivista(String nome, String autore, boolean isPrestato, String richiedente, String edizione, String periodicita, int codice, String tipologia, LocalTime orarioPrestito)
+	public Rivista(String nome, String autore, String edizione, String periodicita, String tipologia, int quanti)
 	{
-			super(nome, autore, isPrestato, richiedente, codice, tipologia, orarioPrestito);
+			super(nome, autore, tipologia, quanti);
 			this.edizione=edizione;
 			this.periodicita=periodicita;
+			this.quanti=quanti;
 	}
 	
 	@Override
@@ -37,20 +38,19 @@ public class Rivista extends Item
 	    String nome = sc.nextLine();
 	    System.out.print("Inserisci autore: ");
 	    String autore = sc.nextLine();
-	    boolean isPrestato = false;
-	    String richiedente = null;
 
 	    System.out.print("Inserisci edizione: ");
 	    String edizione = sc.nextLine();
 	    System.out.print("Inserisci periodicità: ");
 	    String periodicita = sc.nextLine();
-	    int codice = id;
+	    System.out.print("quantità inserita: ");
+        int quanti = Integer.parseInt(sc.nextLine());
+	    
 
 	    String tipologia = "Rivista";
-	    LocalTime orarioPrestito = null;
 
-        return new Rivista(nome, autore, isPrestato, richiedente,
-                            edizione, periodicita, codice, tipologia, orarioPrestito);
+        return new Rivista(nome, autore, 
+                            edizione, periodicita, tipologia, quanti);
     }
 
 	public String getEdizione() {
@@ -83,6 +83,14 @@ public class Rivista extends Item
 
 	public void setCodice(int codice) {
 		this.codice = codice;
+	}
+
+	public int getQuanti() {
+		return quanti;
+	}
+
+	public void setQuanti(int quanti) {
+		this.quanti = quanti;
 	}
 
 	

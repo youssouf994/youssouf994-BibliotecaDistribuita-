@@ -1,7 +1,5 @@
 package it.molinari.server.service;
 
-import it.molinari.server.enums.ActionType;
-import it.molinari.server.enums.HttpStatus;
 import it.molinari.server.model.User;
 import it.molinari.server.model.*;
 
@@ -14,10 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Registrazione 
 {
 	private String nome, cognome, username, password;
-	private int id;
 	private boolean ruolo;
 	private List<User> users = new ArrayList<User>();
-	private ObjectMapper mapper = new ObjectMapper();
 	private GestioneJson IOJson = new GestioneJson();
 	private List<Item> items = new ArrayList<Item>();
 	
@@ -26,9 +22,8 @@ public class Registrazione
 		
 	}
 	
-	public Registrazione(int id, String nome, String cognome, String username, String password, boolean ruolo)
+	public Registrazione(String nome, String cognome, String username, String password, boolean ruolo)
 	{
-		this.id=id;
 		this.nome=nome;
 		this.cognome=cognome;
 		this.username=username;
@@ -46,10 +41,6 @@ public class Registrazione
 	            return false;
 	        }
 	    }
-
-	    // Assegno ID unico SOLO se l'utente è nuovo
-	    int nuovoId = users.stream().mapToInt(User::getId).max().orElse(0) + 1;
-	    user.setId(nuovoId);
 
 	    users.add(user);
 	    IOJson.scriviJson(1, users);
