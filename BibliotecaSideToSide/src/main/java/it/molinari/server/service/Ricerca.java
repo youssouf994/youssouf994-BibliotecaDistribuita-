@@ -64,7 +64,7 @@ public class Ricerca extends GestioneCollezione
 		
 		for (Item elemento: this.listaCollezione )
 		{
-			if(elemento.getNome()==valore)
+			if(elemento.getNome().equalsIgnoreCase(valore))
 			{
 				return elemento.toString();
 			}
@@ -80,7 +80,7 @@ public class Ricerca extends GestioneCollezione
 				
 		for (Item elemento: this.listaCollezione )
 		{
-			if(elemento.getTipologia().equals(valore))
+			if(elemento.getTipologia().equalsIgnoreCase(valore))
 			{
 				this.appoggio.add(elemento);
 				

@@ -1,6 +1,5 @@
 package it.molinari.server.model;
 
-import java.time.*;
 import java.util.Scanner;
 
 public class Libro extends Item

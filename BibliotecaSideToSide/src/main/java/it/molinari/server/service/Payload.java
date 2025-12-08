@@ -55,62 +55,63 @@ public class Payload extends GestioneConnessione
 	
 	public void payload() throws IOException {
 	    System.out.println("=== SERVER IN ASCOLTO ===");
+	    String currentToken = null; // Mantieni traccia del token corrente
 	    
-	    while (true) 
-	    {
-	        try 
+	    try {
+	        while (true) 
 	        {
-	            System.out.println("In attesa di dati dal client...");
-	            super.str = super.inputDaClient.readLine();
-
-	            // Controllo chiusura connessione
-	            if (super.str == null) 
-	            {
-	                System.out.println("Client ha chiuso la connessione");
-	                //tokenizer.cancellaToken(request.getToken());
-	                //chiudiStreams();
-
-	                break;
-	            }
-
-	            // Comando di terminazione
-	            if (super.str.equals("end)")) 
-	            {
-	                System.out.println("Comando di chiusura ricevuto");
-	                super.cout.println(HttpStatus.OK.getCodice() + " " + HttpStatus.OK.getMessaggio());
-	                //tokenizer.cancellaToken(request.getToken());
-	                //chiudiStreams();
-	                break;
-	            }
-
-	            // DEBUG
-	            System.out.println("=== SERVER RICEVUTO ===");
-	            System.out.println("Stringa ricevuta: " + super.str);
-	            System.out.println("Lunghezza: " + super.str.length());
-	            System.out.println("======================");
-
-	            // Deserializza JSON
 	            try 
 	            {
-	                System.out.println("Tentativo di deserializzazione JSON...");
-	                request = mapper.readValue(super.str, Request.class);
-	                super.lista = request.getDati();
-	                super.actionType = request.getActionType();
-	                super.tokenizer.setToken(request.getToken());
-	      
-	                System.out.println("JSON deserializzato con successo!\n" + request.getDati());
-	            } 
-	            catch (Exception e) 
-	            {
-	                System.out.println("ERRORE deserializzazione: " + e.getMessage());
-	                e.printStackTrace();
-	                super.cout.println(HttpStatus.BAD_REQUEST.getCodice() + " JSON non valido");
-	                super.cout.flush();
-	                continue;
-	            }
+	                System.out.println("In attesa di dati dal client...");
+	                super.str = super.inputDaClient.readLine();
 
-	            switch (request.getActionType()) 
-	            {
+	                // Controllo chiusura connessione
+	                if (super.str == null) 
+	                {
+	                    System.out.println("Client ha chiuso la connessione");
+	                    break; // Esci dal while, il finally gestirà la pulizia
+	                }
+
+	                // Comando di terminazione
+	                if (super.str.equals("end")) 
+	                {
+	                    System.out.println("Comando di chiusura ricevuto");
+	                    super.cout.println(HttpStatus.OK.getCodice() + " " + HttpStatus.OK.getMessaggio());
+	                    break; // Esci dal while, il finally gestirà la pulizia
+	                }
+
+	                // DEBUG
+	                System.out.println("=== SERVER RICEVUTO ===");
+	                System.out.println("Stringa ricevuta: " + super.str);
+	                System.out.println("Lunghezza: " + super.str.length());
+	                System.out.println("======================");
+
+	                // Deserializza JSON
+	                try 
+	                {
+	                    request = mapper.readValue(super.str, Request.class);
+	                    super.lista = request.getDati();
+	                    super.actionType = request.getActionType();
+	                    super.tokenizer.setToken(request.getToken());
+	                    
+	                    // Aggiorna il token corrente
+	                    if (request.getToken() != null && !request.getToken().isEmpty()) {
+	                        currentToken = request.getToken();
+	                    }
+	          
+	                    System.out.println("JSON deserializzato con successo!\n" + request.getToken()+" "+request.getDati());
+	                } 
+	                catch (Exception e) 
+	                {
+	                    System.out.println("ERRORE deserializzazione: " + e.getMessage());
+	                    e.printStackTrace();
+	                    super.cout.println(HttpStatus.BAD_REQUEST.getCodice() + " JSON non valido");
+	                    super.cout.flush();
+	                    continue;
+	                }
+
+	                switch (request.getActionType()) 
+	                {
 	                case LOGIN_REQUEST:
 	                	LoginResponse loginResponse = new LoginResponse();
 	                	LoginRequest login = new LoginRequest();
@@ -426,29 +427,51 @@ public class Payload extends GestioneConnessione
 	                    cout.println(serverResponse);
 	                    cout.flush();
                     break;
+	                }
+
+	            } 
+	            catch (java.net.SocketException se) 
+	            {
+	                System.out.println("Client ha chiuso la connessione (SocketException).");
+	                break;
 	            }
-
-	        } 
-	        catch (java.net.SocketException se) 
+	        }
+	    } 
+	    catch (JacksonException e) 
+	    {
+	        System.out.println("ERRORE GRAVE nel payload: jackson");
+	        e.printStackTrace();
+	    } 
+	    catch (Exception e) 
+	    {
+	        System.out.println("ERRORE IMPREVISTO nel payload: runtime");
+	        e.printStackTrace();
+	    }
+	    finally 
+	    {
+	        System.out.println("Pulizia risorse in corso...");
+	        
+	        if (currentToken != null && !currentToken.isEmpty()) 
 	        {
-	            System.out.println("Client ha chiuso la connessione (SocketException).");
-	            chiudiStreams();
-	            
-
-	            break;
-	        } 
-	        catch (JacksonException e) {
-	            System.out.println("ERRORE GRAVE nel payload:");
-	            chiudiStreams();
-	            
-	            e.printStackTrace();
-	            break;
-	            
-	        } 
-	        finally 
+	            try 
+	            {
+	                tokenizer.cancellaToken(currentToken);
+	                System.out.println("Token cancellato: " + currentToken);
+	            } 
+	            catch (Exception e) 
+	            {
+	                System.out.println("Errore durante cancellazione token: " + e.getMessage());
+	            }
+	        }
+	        
+	        try 
 	        {
-	        	//lista.clear();
-	            
+	            chiudiStreams();
+	            System.out.println("Stream chiusi correttamente");
+	        } 
+	        catch (Exception e) 
+	        {
+	            System.out.println("Errore durante chiusura stream: " + e.getMessage());
 	        }
 	    }
 	}

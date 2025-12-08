@@ -79,7 +79,7 @@ public class TestGestConnessione {
             lista.add(ricercato);
             
             // Token vuoto per login iniziale
-            String token = "gHzmjrYHwc";
+            String token = "Oukimcq4Nf";
 
             GeneratoreJson request = new GeneratoreJson();
             String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.SEARCH_ITEMS_REQUEST, lista));
