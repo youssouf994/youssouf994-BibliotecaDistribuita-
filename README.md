@@ -31,6 +31,7 @@
 # DOCUMENTAZIONE LATO SERVER
 <details>
   <summary>Struttura completa del progetto</summary>
+<pre>
 C:.
 |   .classpath
 |   .gitignore
@@ -187,6 +188,8 @@ C:.
         \---it
             \---molinari
                     AppTest.class
+</pre>
+
 
 </details>
 
