@@ -46,10 +46,10 @@ public class Item
 	@Override
 	public String toString() 
 	{
-		return this.tipologia +":\n"+
-	           "  Nome           : " + this.nome + "\n" +
-	           "  Autore         : " + this.autore + "\n" +
-	           "  Tipologia      : " + this.tipologia + "\n" +
+		return this.tipologia +
+	           "  Nome: " + this.nome +
+	           "  Autore: " + this.autore+
+	           "  Tipologia: " + this.tipologia+
 			   "  Quantità disponibile: "+ this.quanti;
 	}
 

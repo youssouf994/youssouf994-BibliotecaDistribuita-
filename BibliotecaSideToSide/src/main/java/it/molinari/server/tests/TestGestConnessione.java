@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,26 +15,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import it.molinari.server.enums.ActionType;
 import it.molinari.server.model.Item;
 import it.molinari.server.model.ItemPrestato;
+import it.molinari.server.model.Ricercato;
 import it.molinari.server.model.User;
 import it.molinari.server.service.GeneratoreJson;
 
 public class TestGestConnessione {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try {
-            // Avvio server in thread separato
-            new Thread(() -> {
-                try {
-                    new it.molinari.server.service.GestioneConnessione().payload();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-            Thread.sleep(1000); // aspetta che il server sia pronto
-
+           
+                    new it.molinari.server.service.GestioneConnessione();
+           
             // === CLIENT ===
-            Socket client = new Socket("localhost", 1051);
+            Socket client = new Socket("localhost", 1055);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
@@ -43,35 +37,40 @@ public class TestGestConnessione {
 
             // Creo un utente valido per il login
             User user = new User();
-            user.setUsername("teowee");      // username che il server riconosce
+            user.setUsername("sjbds");      // username che il server riconosce
             user.setPassword("1235"); 
             user.setCognome("sdf");
-            user.setNome("sjbds");
-            user.setRuolo(false);
+            user.setNome("teow");
+            user.setRuolo(true);
             
             Item item = new Item();
-            item.setNome("Il Signore degli Anelli");
-          
-            item.setId(1);
+            item.setNome("pincopallo");
+            item.setAutore("ciao");
+            item.setQuanti(4);
+            item.setId(15);
             item.setTipologia("Libro");
             ItemPrestato itemPrestato= new ItemPrestato();
-            itemPrestato.setNome(user.getNome());
+            itemPrestato.setNome(user.getUsername());
             itemPrestato.setCognome(user.getCognome());
             itemPrestato.setInizioPrestito(LocalDate.now().toString());
             itemPrestato.setId(1);
             itemPrestato.setTipologia("ItemPrestato");
-            itemPrestato.setQuanti(4);
+            itemPrestato.setQuanti(1);
             itemPrestato.setItem(item);
+            Ricercato ricercato = new Ricercato();
+            ricercato.setValore("Libro");
+            ricercato.setModalita(2);
             
             List<Object> lista = new ArrayList<>();
             //lista.add(user);
-            lista.add(itemPrestato);
-
+            //lista.add(item);
+            lista.add(ricercato);
+            
             // Token vuoto per login iniziale
-            String token = "IWG3Ua7BGD";
+            String token = "gHzmjrYHwc";
 
             GeneratoreJson request = new GeneratoreJson();
-            String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.BORROW_ITEM_REQUEST, lista));
+            String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.SEARCH_ITEMS_REQUEST, lista));
 
             System.out.println("=== CLIENT - INVIO LOGIN_REQUEST ===");
             System.out.println(json);
@@ -90,8 +89,14 @@ public class TestGestConnessione {
 
             client.close();
 
-        } catch (Exception e) {
+        } catch (Exception e) 
+        {
+        	System.out.println("ERRORE GRAVE nel client:");
+        	new it.molinari.server.service.GestioneConnessione().chiudiStreams();
+            //tokenizer.cancellaToken(request.getToken());
             e.printStackTrace();
+            
+           // e.printStackTrace();
         }
     }
 }

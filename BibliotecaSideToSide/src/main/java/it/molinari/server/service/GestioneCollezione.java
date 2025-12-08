@@ -1,6 +1,7 @@
 package it.molinari.server.service;
 
 import it.molinari.server.model.*;
+import it.molinari.server.response.Response;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class GestioneCollezione 
+public class GestioneCollezione extends Response
 {
 	private Item item;
 	Scanner cin = new Scanner(System.in);
@@ -18,59 +19,67 @@ public class GestioneCollezione
 	
 	public GestioneCollezione()
 	{
-		
+		super();
 	}
 	
 	
-	public void aggiungiItem()
+	public boolean aggiungiItem(Item item)
 	{		
-		listaCollezione=streamFile.leggiJson(0, Item.class);
-		if(this.listaCollezione != null)
-		{
-			System.out.println("Che tipo vuoi inserire? (1 = Libro, 2 = Rivista, 3 = Cd)");
-			int scelta=Integer.parseInt(cin.nextLine());
-			
-			switch(scelta)
-			{
-				case 1: 
-					item=Libro.compilaItem(cin, dimensioneCollezione);
-					break;
-					
-				case 2: 
-					item=Rivista.compilaItem(cin, dimensioneCollezione);
-					break;
-					
-				case 3: 
-					item=Cd.compilaItem(cin, dimensioneCollezione);
-					break;
-					
-				default:
-					System.out.println("Scelta errata");
-					
-			}
-			
-			this.listaCollezione.add(item);
-			System.out.println("Hain inserito: ");
-			System.out.println(item.toString());
-		}
-		
-		
-		this.dimensioneCollezione=listaCollezione.size();
+	    listaCollezione = streamFile.leggiJson(0, Item.class);
+
+	    // Controllo campi obbligatori
+	    if (item.nome == null || item.nome.isEmpty()) return false;
+	    if (item.autore == null || item.autore.isEmpty()) return false;
+	    if (item.tipologia == null || item.tipologia.isEmpty()) return false;
+	    if (item.id < 0) return false;
+	    if (item.quanti < 0) return false;
+
+	    boolean trovato = false;
+
+	    // Controllo se l'item esiste già per ID
+	    for (Item collezioneItem : listaCollezione) {
+	        if (collezioneItem.getId() == item.getId()) {
+	            // Incrementa solo il numero di copie
+	            collezioneItem.setQuanti(collezioneItem.getQuanti() + item.getQuanti());
+	            trovato = true;
+	            break;
+	        }
+	    }
+
+	    // Se non trovato, aggiungi nuovo item
+	    if (!trovato) {
+	        listaCollezione.add(item);
+	    }
+
+	    // Salva su JSON
+	    streamFile.scriviJson(0, listaCollezione);
+	    
+	    return true;
 	}
+
 	
-	public void cancellaItem(int codice)
+	public boolean cancellaItem(Item item)
 	{
 		listaCollezione=streamFile.leggiJson(0, Item.class);
 		int i;
 		for (i=0;i<listaCollezione.size();i++)
 		{
-			if(listaCollezione.get(i).codice==codice)
+			if(listaCollezione.get(i).getId()==item.getId())
 			{
-				this.listaCollezione.remove(i);
+				if(listaCollezione.get(i).getQuanti()>=item.getQuanti())
+				{
+					this.listaCollezione.get(i).setQuanti(listaCollezione.get(i).getQuanti()-item.getQuanti());
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 		
-		this.dimensioneCollezione=listaCollezione.size();
+		streamFile.scriviJson(0, this.listaCollezione);
+		
+		return true;
 	}
 	
 	public List<Item> getCollezione()

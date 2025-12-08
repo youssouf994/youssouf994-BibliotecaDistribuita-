@@ -1,13 +1,25 @@
 package it.molinari.server.service;
 
 import it.molinari.server.model.*;
+
+import java.io.IOException;
 import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class Ricerca extends GestioneCollezione
 {	
-	private List<Item> listaCollezione = new ArrayList<>();
-	private int dimensioneCollezione=listaCollezione.size();
+	private List<Item> listaCollezione = new ArrayList<Item>();
+	private List<Object> appoggio = new ArrayList<Object>();
+	private GestioneJson stream = new GestioneJson();
+	private String dati;
+	private GeneratoreJson converter = new GeneratoreJson();
+	
+	public Ricerca()
+	{
+		
+	}
 	
 	public Ricerca(List<Item>lista)
 	{
@@ -21,69 +33,86 @@ public class Ricerca extends GestioneCollezione
 		}
 	}
 	
-	public void cerca(String valore, int modalita)
-	{
-		
-		
+	public String cerca(String valore, int modalita) throws IOException
+	{		
 		switch(modalita)
 		{
 			case 1:
-				this.cercaTitolo(valore);
+				this.dati=this.cercaTitolo(valore);
 				break;
 				
 			case 2:
-				this.cercaTipologia(valore);
+				this.dati=this.cercaTipologia(valore);
 				break;
 				
 			case 3:
 				Integer valoreCast=Integer.parseInt(valore);
-				this.cercaCodice(valoreCast);
+				this.dati=this.cercaCodice(valoreCast);
 				break;
 				
 			default:
-				System.out.println("scelta errata");
+				return ("codice modalià errato");
 		}
+		
+		return this.dati;
 	}
 	
-	private void cercaTitolo(String valore)
+	private String cercaTitolo(String valore) throws IOException
 	{		
+		this.listaCollezione=stream.leggiJson(0, Item.class);
+		
+		
 		for (Item elemento: this.listaCollezione )
 		{
-			if(elemento.nome.equals(valore))
+			if(elemento.getNome()==valore)
 			{
-				System.out.print(elemento.toString());
+				return elemento.toString();
 			}
 		}
 		
+		return "elemento non trovato";
 	}
 	
-	private void cercaTipologia(String valore)
+	
+	private String cercaTipologia(String valore) throws IOException
 	{	
+		this.listaCollezione=stream.leggiJson(0, Item.class);
+				
 		for (Item elemento: this.listaCollezione )
 		{
-			if(elemento.tipologia.equals(valore))
+			if(elemento.getTipologia().equals(valore))
 			{
-				System.out.print(elemento.toString());
-			}	
+				this.appoggio.add(elemento);
+				
+			}
+		}
+		
+		if(appoggio.isEmpty())
+		{
+			return "elemento non trovato";
+	
+		}
+		else
+		{
+			return converter.listToString(appoggio);
 		}
 		
 	}
 	
-	private void cercaCodice(int valore)
+	private String cercaCodice(int valore)
 	{
 		
-		for (Item elemento: this.listaCollezione )
-		{
-			if(elemento.codice==valore)
-			{
-				System.out.print(elemento.toString());
-			}
-		}
+		this.listaCollezione=stream.leggiJson(0, Item.class);
+				
+				for (Item elemento: this.listaCollezione )
+				{
+					if(elemento.getId()==valore)
+					{
+						return elemento.toString();
+					}
+				}
+				
+				return "elemento non trovato";
 	}
 
-	private void syncData()
-	{
-		this.listaCollezione=super.getCollezione();
-		this.dimensioneCollezione=this.listaCollezione.size();
-	}
 }

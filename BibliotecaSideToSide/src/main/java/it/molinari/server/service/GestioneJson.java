@@ -32,29 +32,20 @@ public class GestioneJson
     //  FUNZIONE GENERICA PER LEGGERE QUALSIASI TIPO DI LISTA
     // ============================================================
     public <T> List<T> leggiJson(int indiceFile, Class<T> clazz) {
-
-        List<T> lista = new ArrayList<>();
-
         try {
             File file = new File(archivi[indiceFile]);
-
             if (!file.exists() || file.length() == 0) {
-                return lista;
+                // File vuoto: ritorna lista vuota
+                return new ArrayList<>();
             }
-
-            lista = mapper.readValue(
-                    file,
-                    mapper.getTypeFactory().constructCollectionType(List.class, clazz)
-            );
-
-            System.out.println("leggiJson OK [" + clazz.getSimpleName() + "] → " + lista.size() + " elementi");
+            return mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (Exception e) {
             System.out.println("ERRORE in leggiJson [" + clazz.getSimpleName() + "]");
             e.printStackTrace();
+            return new ArrayList<>();
         }
-
-        return lista;
     }
+
 
     // ============================================================
     //  FUNZIONE GENERICA PER SCRIVERE QUALSIASI LISTA DI T

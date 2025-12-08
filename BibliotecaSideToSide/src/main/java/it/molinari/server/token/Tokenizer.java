@@ -19,55 +19,38 @@ public class Tokenizer
 		
 	}
 	
-	private String generaToken()
-	{
+	private String generaToken() {
+
+	    List<Token> listaTokenLocale = converter.leggiJson(3, Token.class);
+	    if (listaTokenLocale == null) listaTokenLocale = new ArrayList<>();
+
 	    String nuovoToken;
-
-	    // Leggi lista token esistente UNA VOLTA
-	    this.listaToken = converter.leggiJson(3, Token.class);
-	    if (this.listaToken == null) {
-	        this.listaToken = new ArrayList<>();
-	    }
-
-	    while(true)
-	    {
-	        // Genera un nuovo token
-	        StringBuilder tokenBuilder = new StringBuilder(10);
+	    do {
+	        StringBuilder builder = new StringBuilder(10);
 	        for (int i = 0; i < 10; i++) {
 	            int index = random.nextInt(CHARACTERS.length());
-	            tokenBuilder.append(CHARACTERS.charAt(index));
+	            builder.append(CHARACTERS.charAt(index));
 	        }
-	        nuovoToken = tokenBuilder.toString();
+	        nuovoToken = builder.toString();
+	    } while (esisteGia(nuovoToken, listaTokenLocale));
 
-	        // Controlla se il token esiste già
-	        boolean tokenEsiste = false;
-	        for(Token app : this.listaToken)
-	        {
-	            if(app.getToken() != null && app.getToken().equals(nuovoToken))
-	            {
-	                tokenEsiste = false;
-	                break;
-	            }
-	            else
-	            {
-	            	tokenEsiste=true;
-	            	break;
-	            }
-	        }
+	    Token nuovo = new Token();
+	    nuovo.setToken(nuovoToken);
 
-	        // Se è unico, salva e restituisci token
-	        if(tokenEsiste=true)
-	        {
-	            this.token = nuovoToken;
-	            Token nuovoTokenObj = new Token();
-	    	    nuovoTokenObj.setToken(this.token);
-	    	    this.listaToken.add(nuovoTokenObj);
-	    	    converter.scriviJson(3, this.listaToken);
-	            break;
-	        }
-	    }
-	    return this.token;
+	    listaTokenLocale.add(nuovo);
+	    converter.scriviJson(3, listaTokenLocale);
+
+	    return nuovoToken;
 	}
+
+	private boolean esisteGia(String tok, List<Token> lista) {
+	    for (Token t : lista) {
+	        if (tok.equals(t.getToken())) return true;
+	    }
+	    return false;
+	}
+
+
 
 	
 	public boolean isInSession(String token) 
@@ -94,33 +77,22 @@ public class Tokenizer
 	}
 
 	
-	public boolean cancellaToken(String Token)
-	{
-		this.listaToken=converter.leggiJson(3, Token.class);
-		int i=0;
-			
-		if(this.listaToken!=null)
-		{
-			for(i=0; i<listaToken.size();i++)
-			{
-				if(listaToken.get(i).getToken().equalsIgnoreCase(Token))
-				{
-					listaToken.remove(i);
-					this.isInSession=true;
-					break;
-				}
-				else
-				{
-					this.isInSession=false;
-				}
-			}
-		}
-		else
-		{
-			System.out.println("lista vuota");
-		}
-			return this.isInSession;
+	public boolean cancellaToken(String token) {
+	    this.listaToken = converter.leggiJson(3, Token.class);
+	    if (listaToken == null) return false;
+
+	    for (int i = 0; i < listaToken.size(); i++) 
+	    {
+	        if (listaToken.get(i).getToken().equalsIgnoreCase(token)) 
+	        {
+	            listaToken.remove(i);
+	            converter.scriviJson(3, listaToken);
+	            return true; // Token rimosso correttamente
+	        }
+	    }
+	    return false; // Token non trovato
 	}
+
 	
 	public String getToken() 
 	{

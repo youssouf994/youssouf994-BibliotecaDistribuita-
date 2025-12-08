@@ -60,8 +60,7 @@ public class GestorePrestiti extends Response
 
 	    for (Item e : this.listaCollezione)
 	    {
-	    	if (e.getId() == itemPrestato.getItem().getId() && e.getQuanti() >= 0)
-
+	    	if (e.getId() == itemPrestato.getItem().getId() && e.getQuanti() >= itemPrestato.getQuanti())
 	        {
 	            itemPrestato.setInizioPrestito(LocalDate.now().toString());
 	            itemPrestato.setFinePrestito(LocalDate.now().plusDays(15).toString());
@@ -76,6 +75,10 @@ public class GestorePrestiti extends Response
 
 	            return true;
 	        }
+	    	else
+	    	{
+	    		return false;
+	    	}
 	    }
 
 	    return false; 
@@ -123,4 +126,21 @@ public class GestorePrestiti extends Response
 	}
 
 
+	public List<Object> prestitiUtente(String username)
+	{
+	    List<Object> listaDati = new ArrayList<>();
+	    this.listaPrestiti = streamFile.leggiJson(4, ItemPrestato.class);
+
+	    if (this.listaPrestiti != null) {
+	        for (ItemPrestato app : this.listaPrestiti) {
+	            if (app.getNome() != null && app.getNome().equals(username)) {
+	                listaDati.add(app);
+	            }
+	        }
+	    }
+
+	    return listaDati; // lista vuota se non ci sono prestiti
+	}
+
 }
+

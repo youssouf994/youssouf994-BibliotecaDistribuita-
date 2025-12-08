@@ -2,10 +2,11 @@ package it.molinari.server.app;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JacksonException;
 
 
 import it.molinari.server.service.GestioneConnessione;
+import it.molinari.server.service.Payload;
 
 
 public class App 
@@ -14,17 +15,19 @@ public class App
     {
         
     	GestioneConnessione socket = new GestioneConnessione();
+    	Payload payload = new Payload();
         try
         {
         	while(true)
         	{
-        		socket.payload();
+        		payload.payload();
         		break;
         	}
         }
-        catch(IOException e)
+        catch(JacksonException e)
         {
         	System.out.println(e);
+        	socket.chiudiStreams();
         }
         
     } 
