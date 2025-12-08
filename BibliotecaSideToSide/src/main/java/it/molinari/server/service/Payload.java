@@ -21,10 +21,37 @@ public class Payload extends GestioneConnessione
 {
 	public Payload() throws IOException
 	{
-		
+		super();
 	}
 	
-	
+	public Payload(GestioneConnessione conn) {
+
+	    // Socket & networking
+	    this.serverSocket   = conn.serverSocket;
+	    this.clientSocket   = conn.clientSocket;
+	    this.inputDaClient  = conn.inputDaClient;
+	    this.cout           = conn.cout;
+
+	    // Variabili operative
+	    this.str            = conn.str;
+	    this.serverResponse = conn.serverResponse;
+	    this.userJson       = conn.userJson;
+
+	    // Oggetti helper
+	    this.mapper         = conn.mapper;
+	    this.converter      = conn.converter;
+	    this.tokenizer      = conn.tokenizer;
+	    this.lista          = conn.lista;
+
+	    // Business logic
+	    this.actionType     = conn.actionType;
+	    this.engine         = conn.engine;
+
+	    // Request/Response JSON
+	    this.request        = conn.request;
+	    this.response       = conn.response;
+	}
+
 	
 	public void payload() throws IOException {
 	    System.out.println("=== SERVER IN ASCOLTO ===");
@@ -40,12 +67,8 @@ public class Payload extends GestioneConnessione
 	            if (super.str == null) 
 	            {
 	                System.out.println("Client ha chiuso la connessione");
-	                chiudiStreams();
-	                /*if (request != null && request.getToken() != null && !request.getToken().isEmpty()) 
-		            {
-		                tokenizer.cancellaToken(request.getToken());
-		            }*/
-	                
+	                //tokenizer.cancellaToken(request.getToken());
+	                //chiudiStreams();
 
 	                break;
 	            }
@@ -55,12 +78,8 @@ public class Payload extends GestioneConnessione
 	            {
 	                System.out.println("Comando di chiusura ricevuto");
 	                super.cout.println(HttpStatus.OK.getCodice() + " " + HttpStatus.OK.getMessaggio());
-	                chiudiStreams();
-	               /* if (request != null && request.getToken() != null && !request.getToken().isEmpty()) 
-		            {
-		                tokenizer.cancellaToken(request.getToken());
-		            }*/
-
+	                //tokenizer.cancellaToken(request.getToken());
+	                //chiudiStreams();
 	                break;
 	            }
 
@@ -90,8 +109,6 @@ public class Payload extends GestioneConnessione
 	                continue;
 	            }
 
-	            // Gestione azioni
-	            System.out.println("ActionType ricevuto: " + request.getActionType());
 	            switch (request.getActionType()) 
 	            {
 	                case LOGIN_REQUEST:
@@ -116,8 +133,8 @@ public class Payload extends GestioneConnessione
 	                        	{
 		                            request.setToken(tokenizer.getToken());
 		                            request.setActionType(ActionType.LOGIN_RESPONSE);
-		                            loginResponse.setJson("Benvenuto "+utente.getUsername());//se mi manda anche nome e cognome li uso per dare il benvenuto
-		                            loginResponse.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), request.getActionType(), loginResponse.getJson());
+		                            userJson=mapper.writeValueAsString(utente);//se mi manda anche nome e cognome li uso per dare il benvenuto
+		                            loginResponse.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), request.getActionType(), userJson);
 		                            //serverResponse = HttpStatus.OK.getCodice()+"\t"+HttpStatus.OK.getMessaggio() + "\t" + token + "\t" + request.getActionType() + "\t" + userJson;
 	                        	}
                         	} 

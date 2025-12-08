@@ -14,8 +14,8 @@ public class App
     public static void main( String[] args ) throws IOException
     {
         
-    	GestioneConnessione socket = new GestioneConnessione();
-    	Payload payload = new Payload();
+    	GestioneConnessione socket = new GestioneConnessione(1050);
+    	Payload payload = new Payload(socket);
         try
         {
         	while(true)
@@ -24,7 +24,7 @@ public class App
         		break;
         	}
         }
-        catch(JacksonException e)
+        catch(Exception e)
         {
         	System.out.println(e);
         	socket.chiudiStreams();

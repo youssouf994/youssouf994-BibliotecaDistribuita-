@@ -18,23 +18,35 @@ import it.molinari.server.model.ItemPrestato;
 import it.molinari.server.model.Ricercato;
 import it.molinari.server.model.User;
 import it.molinari.server.service.GeneratoreJson;
+import it.molinari.server.service.GestioneConnessione;
+import it.molinari.server.service.Payload;
 
 public class TestGestConnessione {
 
     public static void main(String[] args) throws IOException {
         try {
-           
-                    new it.molinari.server.service.GestioneConnessione();
-           
+            // Avvio server in thread separato
+            new Thread(() -> {
+                try {
+                    GestioneConnessione conn = new GestioneConnessione(1057);
+                    Payload payload = new Payload(conn);
+                    payload.payload();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            Thread.sleep(1000); // aspetta che il server sia pronto
+
             // === CLIENT ===
-            Socket client = new Socket("localhost", 1055);
+            Socket client = new Socket("localhost", 1057);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
+            
             // Creo un utente valido per il login
             User user = new User();
             user.setUsername("sjbds");      // username che il server riconosce

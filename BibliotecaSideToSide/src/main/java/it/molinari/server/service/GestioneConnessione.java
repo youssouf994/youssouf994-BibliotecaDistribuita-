@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneConnessione 
 {
-	protected static final int PORT=1055;
+	protected static final int PORT=1057;
 	protected ServerSocket serverSocket;
 	protected Socket clientSocket=null;//abbinamento per il client
 	protected BufferedReader inputDaClient= null;
@@ -41,22 +41,24 @@ public class GestioneConnessione
 	protected Request request;
 	protected Response response;
 
+	public GestioneConnessione()
+	{
+		
+	}
 	
-	public GestioneConnessione() throws IOException//RICHIESTA CONNESSIONE
+	public GestioneConnessione(int port) throws IOException//RICHIESTA CONNESSIONE
 	{
 		try
 		{
 			this.mapper.registerModule(new JavaTimeModule());
 			this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 			
-			this.serverSocket = new ServerSocket(PORT);//server in ascolto 
+			this.serverSocket = new ServerSocket(port);//server in ascolto 
 			this.clientSocket= this.serverSocket.accept();
 			System.out.println("Connessione con client: "+this.clientSocket);
 			
 			this.apriStreamDaClient();
 			this.apriStreamPerClient();
-			Payload payload = new Payload();
-		
 			
 		}
 		catch(IOException e)
