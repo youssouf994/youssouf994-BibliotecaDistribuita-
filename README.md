@@ -29,6 +29,54 @@
 
 
 # DOCUMENTAZIONE LATO SERVER
+
+## Esempi di utilizzo
+
+### Log di client non autenticato manda request:
+## Esempio di log console
+
+```text
+Connessione con client: Socket[addr=/127.0.0.1,port=51278,localport=1057]
+=== SERVER IN ASCOLTO ===
+In attesa di dati dal client...
+=== CLIENT - INVIO LOGIN_REQUEST ===
+{"token":"gHzmjrYHwc","actionType":"SEARCH_ITEMS_REQUEST","listaData":[{"valore":"Libro","modalita":2}]}
+=== SERVER RICEVUTO ===
+Stringa ricevuta: {"token":"gHzmjrYHwc","actionType":"SEARCH_ITEMS_REQUEST","listaData":[{"valore":"Libro","modalita":2}]}
+Lunghezza: 104
+======================
+Tentativo di deserializzazione JSON...
+JSON deserializzato con successo!
+gHzmjrYHwc [{valore=Libro, modalita=2}]
+In attesa di dati dal client...
+=== CLIENT - RISPOSTA ===
+404    Risorsa non trovata    null    SEARCH_ITEMS_RESPONSE    Accesso al sistema non consentito verifica validità sessione
+Comando di chiusura ricevuto
+'''
+
+### Log di client autenticato manda request:
+## Esempio di log console
+'''text
+Connessione con client: Socket[addr=/127.0.0.1,port=57041,localport=1057]
+=== SERVER IN ASCOLTO ===
+In attesa di dati dal client...
+=== CLIENT - INVIO LOGIN_REQUEST ===
+{"token":"Oukimcq4Nf","actionType":"SEARCH_ITEMS_REQUEST","listaData":[{"valore":"Libro","modalita":2}]}
+=== SERVER RICEVUTO ===
+Stringa ricevuta: {"token":"Oukimcq4Nf","actionType":"SEARCH_ITEMS_REQUEST","listaData":[{"valore":"Libro","modalita":2}]}
+Lunghezza: 104
+======================
+Tentativo di deserializzazione JSON...
+JSON deserializzato con successo!
+Oukimcq4Nf [{valore=Libro, modalita=2}]
+In attesa di dati dal client...
+=== CLIENT - RISPOSTA ===
+200	Successo	Oukimcq4Nf	SEARCH_ITEMS_RESPONSE	[{"nome":"Il Signore degli Anelli","autore":"J.R.R. Tolkien","tipologia":"Libro","id":1,"quanti":1,"isbn":"9780544003415","genere":"Fantasy"},{"nome":"1984","autore":"George Orwell","tipologia":"Libro","id":2,"quanti":0,"isbn":"9780451524935","genere":"Distopico"},{"nome":"Harry Potter e la Pietra Filosofale","autore":"J.K. Rowling","tipologia":"Libro","id":7,"quanti":6,"isbn":"9780747532743","genere":"Fantasy"},{"nome":"Il Nome della Rosa","autore":"Umberto Eco","tipologia":"Libro","id":10,"quanti":4,"isbn":"9788807900925","genere":"Storico"},{"nome":"pincopallo","autore":"ciao","tipologia":"Libro","id":1,"quanti":4,"isbn":null,"genere":null},{"nome":"pincopallo","autore":"ciao","tipologia":"Libro","id":15,"quanti":4,"isbn":null,"genere":null}]
+Comando di chiusura ricevuto
+scriviJson OK [tokens.json] 1 elementi salvati
+'''
+
+
 <details>
   <summary>Struttura completa del progetto</summary>
 <pre>
