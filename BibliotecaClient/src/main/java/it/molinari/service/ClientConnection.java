@@ -40,6 +40,7 @@ public class ClientConnection {
 	
 	public void send(String json) {
 		out.println(json);
+		out.flush();
 	}
 	
 	public String receive() throws IOException {

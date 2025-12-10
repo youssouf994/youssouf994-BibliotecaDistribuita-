@@ -26,7 +26,7 @@ public class User
 		this.ruolo=ruolo;
 	}
 	
-	@Override
+/*	@Override
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("User {\n");
@@ -38,7 +38,7 @@ public class User
 	    sb.append("}");
 	    return sb.toString();
 	}
-
+*/
 	public String getNome() {
 		return nome;
 	}
@@ -65,12 +65,12 @@ public class User
 		this.username = username;
 	}
 
-	public String getPass() {
+	public String getPassword() {
 		return password;
 	}
 
-	public void setPass(String pass) {
-		this.password = pass;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public boolean isRuolo() {
