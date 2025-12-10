@@ -467,8 +467,7 @@ C:.
 
 ## Implementato in collaborazione 
 - **Youssouf A. Toure** -Backend/Server  profile owner
-  ## Contatti
-  **Email:** toure.youssouf.alassane@gmail.com
+  - **Email:** toure.youssouf.alassane@gmail.com
 
 - **Matteo De Patto** - Frontent/Client https://github.com/MarkusStaiger
                                         https://gitlab.com/MarkusStaiger
