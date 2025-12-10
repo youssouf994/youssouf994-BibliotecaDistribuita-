@@ -1,0 +1,16 @@
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\App.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\Cd.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\ClientUI.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\Item.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\Libro.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\Rivista.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\Token.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\model\User.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\service\ClientConnection.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\service\ClientManager.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\service\LoginRequest.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\service\Request.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\service\Response.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\utility\ActionType.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\utility\GeneratoreJson.java
+C:\Users\Matteo\eclipse-workspace\BibliotecaClient\src\main\java\it\molinari\utility\TestConnection.java
