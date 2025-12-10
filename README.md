@@ -75,7 +75,7 @@ scriviJson OK [tokens.json] 1 elementi salvati
 
 
 <details>
-  <summary>Struttura completa del progetto</summary>
+  <summary>Struttura completa del progetto Server</summary>
 <pre>
 C:.
 |   .classpath
@@ -236,6 +236,234 @@ C:.
 </pre>
 </details>
 
+# DOCUMENTAZIONE LATO CLIENT
+## Esempio di utilizzo Login
+```text
+[LOG]Connessione al server in corso...
+[LOG]Connessione stabilita con il server!
+
+=== MENU PRINCIPALE ===
+1) Login
+2) Registrazione
+0) Esci
+Scelta: 1
+Username: teo
+Password: 12345
+
+Login effettuato.
+
+=== MENU ADMIN ===
+1) Visualizza magazzino
+2) Cerca item
+3) Aggiungi item
+4) Rimuovi item
+5) Effettua prestito
+6) Restituisci item
+7) Visualizza prestiti utente
+0) Logout
+```
+## Nel caso che l'utente sia un user il menu sara:
+```text
+=== MENU UTENTE ===
+1) Visualizza magazzino
+2) Cerca item
+3) Effettua prestito
+4) Restituisci item
+5) Visualizza prestiti
+0) Logout
+Scelta:
+```
+## Richiesta Visualizzazione Magazzino
+```text
+Scelta: 1
+
+=== MAGAZZINO ===
+ID: 1
+Nome: Il Signore degli Anelli
+Autore: J.R.R. Tolkien
+Tipologia: Libro
+Quantità: 1
+------------------------
+ID: 2
+Nome: 1984
+Autore: George Orwell
+Tipologia: Libro
+Quantità: 0
+------------------------
+ID: 3
+Nome: National Geographic
+Autore: National Geographic Society
+Tipologia: Rivista
+Quantità: 0
+------------------------
+ID: 4
+Nome: La Settimana Enigmistica
+Autore: Anonimo
+Tipologia: Rivista
+Quantità: 15
+------------------------
+ID: 5
+Nome: Thriller Hits
+Autore: Vari
+Tipologia: Cd
+Quantità: 4
+------------------------
+ID: 6
+Nome: Classical Collection
+Autore: Mozart
+Tipologia: Cd
+Quantità: 2
+------------------------
+ID: 7
+Nome: Harry Potter e la Pietra Filosofale
+Autore: J.K. Rowling
+Tipologia: Libro
+Quantità: 6
+------------------------
+ID: 8
+Nome: Focus
+Autore: Mondadori
+Tipologia: Rivista
+Quantità: 12
+------------------------
+ID: 9
+Nome: Greatest Rock
+Autore: Various Artists
+Tipologia: Cd
+Quantità: 3
+------------------------
+ID: 10
+Nome: Il Nome della Rosa
+Autore: Umberto Eco
+Tipologia: Libro
+Quantità: 4
+------------------------
+ID: 11
+Nome: pincopallo
+Autore: ciao
+Tipologia: Libro
+Quantità: 4
+------------------------
+ID: 0
+Nome: provalibro
+Autore: matteo
+Tipologia: Libro
+Quantità: 6
+------------------------
+```
+<details>
+  <summary>Struttura completa del progetto Client</summary>
+<pre>
+C:.
+│   .classpath
+│   .project
+│   pom.xml
+│
+├───.settings
+│       org.eclipse.jdt.core.prefs
+│       org.eclipse.m2e.core.prefs
+│
+├───src
+│   ├───main
+│   │   └───java
+│   │       └───it
+│   │           └───molinari
+│   │               │   App.java
+│   │               │
+│   │               ├───model
+│   │               │       Cd.java
+│   │               │       ClientUI.java
+│   │               │       Item.java
+│   │               │       ItemPrestato.java
+│   │               │       Libro.java
+│   │               │       Ricercato.java
+│   │               │       Rivista.java
+│   │               │       User.java
+│   │               │
+│   │               ├───service
+│   │               │       AggiungiItemRequest.java
+│   │               │       ClientConnection.java
+│   │               │       ClientManager.java
+│   │               │       GetItemsRequest.java
+│   │               │       LoginRequest.java
+│   │               │       PrestitiUtenteRequest.java
+│   │               │       PrestitoRequest.java
+│   │               │       RegisterRequest.java
+│   │               │       Request.java
+│   │               │       Response.java
+│   │               │       RestituzioneRequest.java
+│   │               │       RicercaRequest.java
+│   │               │       RimuoviItemRequest.java
+│   │               │
+│   │               └───utility
+│   │                       ActionType.java
+│   │                       GeneratoreJson.java
+│   │
+│   └───test
+│       └───java
+│           └───it
+│               └───molinari
+│                       AppTest.java
+│
+└───target
+    ├───classes
+    │   ├───it
+    │   │   └───molinari
+    │   │       │   App.class
+    │   │       │
+    │   │       ├───model
+    │   │       │       Cd.class
+    │   │       │       ClientUI.class
+    │   │       │       Item.class
+    │   │       │       ItemPrestato.class
+    │   │       │       Libro.class
+    │   │       │       Ricercato.class
+    │   │       │       Rivista.class
+    │   │       │       User.class
+    │   │       │
+    │   │       ├───service
+    │   │       │       AggiungiItemRequest.class
+    │   │       │       ClientConnection.class
+    │   │       │       ClientManager.class
+    │   │       │       GetItemsRequest.class
+    │   │       │       LoginRequest.class
+    │   │       │       PrestitiUtenteRequest.class
+    │   │       │       PrestitoRequest.class
+    │   │       │       RegisterRequest.class
+    │   │       │       Request.class
+    │   │       │       Response.class
+    │   │       │       RestituzioneRequest.class
+    │   │       │       RicercaRequest.class
+    │   │       │       RimuoviItemRequest.class
+    │   │       │
+    │   │       └───utility
+    │   │               ActionType.class
+    │   │               GeneratoreJson.class
+    │   │
+    │   └───META-INF
+    │       │   MANIFEST.MF
+    │       │
+    │       └───maven
+    │           └───it.molinari
+    │               └───BibliotecaClient
+    │                       pom.properties
+    │                       pom.xml
+    │
+    ├───generated-sources
+    │   └───annotations
+    ├───maven-status
+    │   └───maven-compiler-plugin
+    │       └───compile
+    │           └───default-compile
+    │                   createdFiles.lst
+    │                   inputFiles.lst
+    │
+    └───test-classes
+        └───it
+            └───molinari
+                    AppTest.class
+  </pre>
+</details>
 
 ## Implementato in collaborazione 
 - **Youssouf A. Toure** -Backend/Server  profile owner
@@ -243,12 +471,12 @@ C:.
   **Email:** toure.youssouf.alassane@gmail.com
 
 - **Matteo De Patto** - Frontent/Client https://github.com/MarkusStaiger
-
+                                        https://gitlab.com/MarkusStaiger
 
 
 ## MIT License
 
-** Copyright (c) 2025 [Tuo Nome]
+** Copyright (c) 2025 youssouf994 & MarkusStaiger
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
