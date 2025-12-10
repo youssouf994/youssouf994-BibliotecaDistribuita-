@@ -470,7 +470,7 @@ C:.
   - **Email:** toure.youssouf.alassane@gmail.com
 
 - **Matteo De Patto** - Frontent/Client https://github.com/MarkusStaiger
-                                        https://gitlab.com/MarkusStaiger
+  - **Profilo Gitlab:** https://gitlab.com/MarkusStaiger
 
 
 ## MIT License
