@@ -35,6 +35,7 @@ public class Ricerca extends GestioneCollezione
 	
 	public String cerca(String valore, int modalita) throws IOException
 	{		
+		this.dati=null;
 		switch(modalita)
 		{
 			case 1:
@@ -59,6 +60,7 @@ public class Ricerca extends GestioneCollezione
 	
 	private String cercaTitolo(String valore) throws IOException
 	{		
+		this.listaCollezione.clear();
 		this.listaCollezione=stream.leggiJson(0, Item.class);
 		
 		
@@ -76,6 +78,8 @@ public class Ricerca extends GestioneCollezione
 	
 	private String cercaTipologia(String valore) throws IOException
 	{	
+		this.listaCollezione.clear();
+		this.appoggio.clear();
 		this.listaCollezione=stream.leggiJson(0, Item.class);
 				
 		for (Item elemento: this.listaCollezione )
@@ -101,7 +105,7 @@ public class Ricerca extends GestioneCollezione
 	
 	private String cercaCodice(int valore)
 	{
-		
+		this.listaCollezione.clear();
 		this.listaCollezione=stream.leggiJson(0, Item.class);
 				
 				for (Item elemento: this.listaCollezione )

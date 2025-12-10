@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import it.molinari.server.enums.ActionType;
 import it.molinari.server.enums.HttpStatus;
@@ -19,6 +21,13 @@ import it.molinari.server.response.RegistrationResponse;
 
 public class Payload extends GestioneConnessione
 {
+	ObjectNode jsonApp = mapper.createObjectNode();
+	JsonNode nodoJsonApp;
+	ItemPrestato item= new ItemPrestato();
+	User utente = new User();
+	Item item2 = new Item();
+	
+	
 	public Payload() throws IOException
 	{
 		super();
@@ -119,14 +128,11 @@ public class Payload extends GestioneConnessione
 	                    if (lista == null || lista.isEmpty()) 
 	                    {   	
 	                    	loginResponse.setCodice(HttpStatus.BAD_REQUEST.getCodice());
-	                    	loginResponse.setMessaggio(HttpStatus.BAD_REQUEST.getMessaggio());
-	                    	loginResponse.setJson("Login non autorizzato");
-	                        //serverResponse = HttpStatus.BAD_REQUEST.getCodice() + " Lista dati vuota";
+	                    	loginResponse.setMessaggio(HttpStatus.BAD_REQUEST.getMessaggio()+"Utente non registrato");
 	                    } 
 	                    else 
 	                    {
 	                        User utente = mapper.convertValue(lista.get(0), User.class);
-	                        userJson = mapper.writeValueAsString(utente);
       
 	                        if (login.provaLogin(utente)) 
 	                        {
@@ -134,46 +140,51 @@ public class Payload extends GestioneConnessione
 	                        	{
 		                            request.setToken(tokenizer.getToken());
 		                            request.setActionType(ActionType.LOGIN_RESPONSE);
-		                            userJson=mapper.writeValueAsString(utente);//se mi manda anche nome e cognome li uso per dare il benvenuto
-		                            loginResponse.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), request.getActionType(), userJson);
-		                            //serverResponse = HttpStatus.OK.getCodice()+"\t"+HttpStatus.OK.getMessaggio() + "\t" + token + "\t" + request.getActionType() + "\t" + userJson;
-	                        	}
-                        	} 
-	                        else 
-	                        {
-	                        	request.setActionType(ActionType.LOGIN_RESPONSE);
-	                        	request.setToken("");
-	                        	loginResponse.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), request.getToken(), request.getActionType(), "username o password errati");
-	                            //serverResponse = HttpStatus.NOT_FOUND.getCodice() + "\t" + HttpStatus.NOT_FOUND.getMessaggio() + "\t" + request.getToken() + "\t" + request.getActionType() + "\t" + userJson;
+		                            loginResponse.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), request.getActionType());		                        
+	                        	} 
+		                        else 
+		                        {
+		                        	request.setActionType(ActionType.LOGIN_RESPONSE);
+		                        	request.setToken("");
+		                        	
+		                        	loginResponse.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"username o password errati", request.getToken(), request.getActionType());
+		                        }
 	                        }
 	                    }
-	                    cout.println(loginResponse.getResponse());
+                    	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(loginResponse);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("User", mapper.valueToTree(login.getU()));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
+	                    cout.println(mapper.writeValueAsString(jsonApp));
 	                    cout.flush();
 	                    break;
 
 	                case REGISTRATION_REQUEST:
 	                    User nuovoUtente = mapper.convertValue(lista.get(0), User.class);
 	                    Registrazione registrazione = new Registrazione();                  
-	                    //userJson = mapper.writeValueAsString(nuovoUtente);
 	                    RegistrationResponse response = new RegistrationResponse();
 	                    response.setActionType(ActionType.REGISTRATION_REQUEST);
 	                    
 	                    if (registrazione.registra(nuovoUtente)) 
 	                    {       	
-	                    	userJson="Nuovo utente registrato "+"Nome: "+nuovoUtente.getNome()+" Cognome: "+nuovoUtente.getCognome()+" Username: "+nuovoUtente.getUsername();
-	                    	response.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), "", response.getActionType(), userJson);
-	                        //serverResponse = HttpStatus.OK.getCodice() + "\t" + HttpStatus.OK.getMessaggio() + "\t" + request.getToken() + "\t" + request.getActionType() + "\t" + userJson;
-	                    } 
+	                    	response.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), "", response.getActionType());     } 
 	                    else 
 	                    {
-	                    	response.setResponse(HttpStatus.BAD_REQUEST.getCodice(), HttpStatus.BAD_REQUEST.getMessaggio(), "", response.getActionType(), "Questo utente è già registrato");
-	                        //serverResponse = HttpStatus.BAD_REQUEST.getCodice() + "\t" + HttpStatus.BAD_REQUEST.getMessaggio() + "\t" + request.getToken() + "\t" + request.getActionType();
+	                    	response.setResponse(HttpStatus.BAD_REQUEST.getCodice(), HttpStatus.BAD_REQUEST.getMessaggio()+"Questo utente è già registrato", "", response.getActionType());
 	                    }
-	                    cout.println(response.getResponse());
+	                    
+	                    jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(response);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("Registrazione", mapper.valueToTree(response));
+                    	jsonApp.set("Registrato", mapper.valueToTree(registrazione));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
+	                    cout.println(mapper.writeValueAsString(jsonApp));
 	                    cout.flush();
 	                    break;
 
-	                case GET_ITEMS_REQUEST:
+	               case GET_ITEMS_REQUEST:
 	                	GetBookRes responseBook = new GetBookRes();
 	                	responseBook.setActionType(ActionType.GET_ITEMS_RESPONSE);
 	                	
@@ -181,32 +192,36 @@ public class Payload extends GestioneConnessione
 	                    {
 	                    	responseBook.setToken(request.getToken());
 	                        lista.add(engine.getCollezione());
-	                        userJson = converter.listToString(lista);
 
-	                        if(userJson!=null)
+
+	                        if(lista!=null)
 	                        {
-                        		responseBook.setResponse(HttpStatus.OK.getCodice(),HttpStatus.OK.getMessaggio(), responseBook.getToken(), responseBook.getActionType(), userJson);
+                        		responseBook.setResponse(HttpStatus.OK.getCodice(),HttpStatus.OK.getMessaggio(), responseBook.getToken(), responseBook.getActionType());
 	                        }
 	                        else
 	                        {
-	                        	responseBook.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), responseBook.getToken(), responseBook.getActionType(), "Non sono presenti articoli nella collezione");
+	                        	responseBook.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"Non sono presenti articoli nella collezione", responseBook.getToken(), responseBook.getActionType());
 	                        }	             
 	                    } 
 	                    else 
 	                    {
 	                        responseBook.setActionType(ActionType.GET_ITEMS_RESPONSE);
-	                        responseBook.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), responseBook.getToken(), responseBook.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        responseBook.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"Accesso al sistema non consentito verifica validità sessione", responseBook.getToken(), responseBook.getActionType());
 	                    }
-	                    cout.println(responseBook.getResponse());
+	                    jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(responseBook);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("listaData", mapper.valueToTree(engine.getCollezione()));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
+	                    cout.println(mapper.writeValueAsString(jsonApp));
 	                    cout.flush();
 	                    break;
 	                    
 	                case BORROW_ITEM_REQUEST:
 	                	GestorePrestiti gestorePrestiti = new GestorePrestiti();
+	                	
 	                	if (tokenizer.isInSession(request.getToken()))
-	                	{ 	                		
-	                		ItemPrestato item = new ItemPrestato();
-	                		
+	                	{ 	                		   		
 	                		Object appoggio= lista.stream().filter(o ->
 	                		{
 	                			if(o instanceof Map m)
@@ -225,22 +240,26 @@ public class Payload extends GestioneConnessione
 	                		
 	                		if(gestorePrestiti.daiInPrestito(item))
 	                		{
-	                			userJson="libro: "+item.getItem().getNome()+" Autore: "+item.getItem().getAutore()+" preso in prestito fino al "+item.getFinePrestito();
-	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(),HttpStatus.OK.getMessaggio(), request.getToken(), gestorePrestiti.getActionType(), userJson);
+	                			//userJson="libro: "+item.getItem().getNome()+" Autore: "+item.getItem().getAutore()+" preso in prestito fino al "+item.getFinePrestito();
+	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(),HttpStatus.OK.getMessaggio(), request.getToken(), gestorePrestiti.getActionType());
 	                		}
 	                		else
 	                		{
-	                			userJson="Il libro selezionato non è disponibile o inesistente";
-	                			gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(),HttpStatus.NOT_FOUND.getMessaggio(), gestorePrestiti.getToken(), gestorePrestiti.getActionType(), userJson);
+	                			gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(),HttpStatus.NOT_FOUND.getMessaggio()+"Il libro selezionato non è disponibile o inesistente", gestorePrestiti.getToken(), gestorePrestiti.getActionType());
 	                		}
 	                		
 	                	}
 	                	else
 	                	{
 	                		gestorePrestiti.setActionType(ActionType.GET_ITEMS_RESPONSE);
-	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), gestorePrestiti.getToken(), gestorePrestiti.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"Accesso al sistema non consentito verifica validità sessione", gestorePrestiti.getToken(), gestorePrestiti.getActionType());
 	                	}
-	                	cout.println(gestorePrestiti.getResponse());
+	                	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(gestorePrestiti);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("listaData", mapper.valueToTree(item));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
+	                    cout.println(mapper.writeValueAsString(jsonApp));
 	                    cout.flush();
 	                    break;
 	                	
@@ -255,41 +274,39 @@ public class Payload extends GestioneConnessione
 	                            .orElse(null);
 
 	                        if (appoggio != null) {
-	                            ItemPrestato item = mapper.convertValue(appoggio, ItemPrestato.class);
+	                            item = mapper.convertValue(appoggio, ItemPrestato.class);
 
 	                            gestorePrestiti.setActionType(ActionType.RETURN_ITEM_RESPONSE);
 
 	                            boolean ok = gestorePrestiti.ritornaPrestito(item);
 
-	                            String userJson;
 	                            int status;
 	                            String messaggio;
 
-	                            if (ok) {
-	                                userJson = "Libro: " + item.getItem().getNome() + 
-	                                           " Autore: " + item.getItem().getAutore() + 
-	                                           " ritornato in biblioteca";
+	                            if (ok) 
+	                            {
 	                                status = HttpStatus.OK.getCodice();
 	                                messaggio = HttpStatus.OK.getMessaggio();
-	                            } else {
-	                                userJson = "ID articolo non presente nel sistema";
+	                            } 
+	                            else 
+	                            {
 	                                status = HttpStatus.NOT_FOUND.getCodice();
-	                                messaggio = HttpStatus.NOT_FOUND.getMessaggio();
+	                                messaggio = HttpStatus.NOT_FOUND.getMessaggio()+"ID articolo non presente nel sistema";
 	                            }
-
-	                            // Imposta la risposta correttamente
-	                            gestorePrestiti.setResponse(status, messaggio, request.getToken(), 
-	                                                        gestorePrestiti.getActionType(), userJson);
+	                            gestorePrestiti.setResponse(status, messaggio, request.getToken(), gestorePrestiti.getActionType());
 	                        }
 	                    }
 	                    else
 	                    {
 	                    	gestorePrestiti.setActionType(ActionType.GET_ITEMS_RESPONSE);
-	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), gestorePrestiti.getToken(), gestorePrestiti.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"Accesso al sistema non consentito verifica validità sessione", gestorePrestiti.getToken(), gestorePrestiti.getActionType());
 	                    }
 	                    
-
-                        cout.println(gestorePrestiti.getResponse());
+	                    jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(gestorePrestiti);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("listaData", mapper.valueToTree(item));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
                         cout.flush();
 	                    break;
 	                    
@@ -303,22 +320,24 @@ public class Payload extends GestioneConnessione
 	                		lista=gestorePrestiti.prestitiUtente(username);
 	                		if(lista.isEmpty())
 							{
-	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), ActionType.GET_USER_LOANS_RESPONSE, "nessun Prestito a carico");
+	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio()+" nessun Prestito a carico", request.getToken(), ActionType.GET_USER_LOANS_RESPONSE);
 							}
 	                		else
 	                		{
-	                			userJson=converter.listToString(lista);
-	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), ActionType.GET_USER_LOANS_RESPONSE, userJson);
+	                			gestorePrestiti.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), ActionType.GET_USER_LOANS_RESPONSE);
 	                		}
 	                	}
 	                	else
 	                	{
 	                		gestorePrestiti.setActionType(ActionType.GET_USER_LOANS_RESPONSE);
-	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), gestorePrestiti.getToken(), gestorePrestiti.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        gestorePrestiti.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+" Accesso al sistema non consentito verifica validità sessione", gestorePrestiti.getToken(), gestorePrestiti.getActionType());
 	                	}
-
-
-                        cout.println(gestorePrestiti.getResponse());
+	                	
+	                	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(gestorePrestiti);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("listaData", mapper.valueToTree(lista));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
                         cout.flush();
 	                	
                 	break;
@@ -326,99 +345,113 @@ public class Payload extends GestioneConnessione
 	                case ADD_ITEMS_REQUEST:
 	                	engine = new GestioneCollezione();
 	                	
+	                	
 	                	if(tokenizer.isInSession(request.getToken()))
 	                	{
 	                		System.out.println(lista);
-	                		Item item= mapper.convertValue(lista.get(1), Item.class);
-	                		User utente = mapper.convertValue(lista.get(0), User.class);
+	                		item2= mapper.convertValue(lista.get(1), Item.class);
+	                		utente = mapper.convertValue(lista.get(0), User.class);
 	                		
 	                		if(utente.isRuolo()==true)
             				{
 	                			if (engine.aggiungiItem(item))
             					{
-	                				userJson=item.getQuanti()+" "+item.getNome()+" inseriti correttamente";
-	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), ActionType.ADD_ITEMS_RESPONSE, userJson);			
+	                				userJson=item2.getQuanti()+" "+item2.getNome()+" inseriti correttamente";
+	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio()+" "+userJson, request.getToken(), ActionType.ADD_ITEMS_RESPONSE);			
             					}
 		                		else 
 		                		{
-		                			userJson="Non hai compilato tutti i campi richiesti"+ mapper.writeValueAsString(item);
-		                			engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), ActionType.ADD_ITEMS_RESPONSE, userJson);
+		                			userJson="Non hai compilato tutti i campi richiesti"+ mapper.writeValueAsString(item2);
+		                			engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio()+userJson, request.getToken(), ActionType.ADD_ITEMS_RESPONSE);
 		                		}
             				}
 	                		else
 	                		{
 		                		engine.setActionType(ActionType.ADD_ITEMS_RESPONSE);
-		                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), request.getToken(), ActionType.ADD_ITEMS_RESPONSE, "r+w-x+ richiedere privilegi ad amministratore");
+		                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"r+w-x+ richiedere privilegi ad amministratore", request.getToken(), ActionType.ADD_ITEMS_RESPONSE);
 
 	                		}
 	                	}
 	                	else
 	                	{
 	                		engine.setActionType(ActionType.ADD_ITEMS_RESPONSE);
-	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), request.getToken(), ActionType.ADD_ITEMS_RESPONSE, "Accesso al sistema non consentito verifica validità sessione");
+	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+"Accesso al sistema non consentito verifica validità sessione", request.getToken(), ActionType.ADD_ITEMS_RESPONSE);
 	                	}
 	                	
-	                	cout.println(engine.getResponse());
+	                	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(engine);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("User", mapper.valueToTree(utente));
+                    	jsonApp.set("Item", mapper.valueToTree(item2));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
                         cout.flush();
                 	break;
 	                	
 	                case REMOVE_ITEMS_REQUEST:
 	                	engine = new GestioneCollezione();
-	                	
+	                	User user =mapper.convertValue(lista.get(0), User.class);
 	                	if(tokenizer.isInSession(request.getToken()))
 	                	{
-	                		Item item = mapper.convertValue(lista.get(1), Item.class);
-	                		User user =mapper.convertValue(lista.get(0), User.class);
-	                		
+	                		item2 = mapper.convertValue(lista.get(1), Item.class);
+	
 	                		engine.setActionType(ActionType.REMOVE_ITEMS_RESPONSE);
 	                		
 	                		if(user.isRuolo()==true)
 	                		{
 		                		if(engine.cancellaItem(item))
 		                		{
-		                			userJson=item.getQuanti()+" "+item.getNome()+" cancellati correttamente";
-	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), engine.getActionType(), userJson);			
+		                			userJson=item2.getQuanti()+" "+item2.getNome()+" cancellati correttamente";
+	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio()+userJson, request.getToken(), engine.getActionType());			
 		                		}
 		                		else
 		                		{
-		                			userJson="id o quantità errati";
-	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), engine.getActionType(), userJson);			
+		                			userJson=" id o quantità errati";
+	                				engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio()+userJson, request.getToken(), engine.getActionType());			
 		                		}
 	                		}
 	                	}
 	                	else
 	                	{
 	                		engine.setActionType(ActionType.REMOVE_ITEMS_RESPONSE);
-	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), engine.getToken(), engine.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+" Accesso al sistema non consentito verifica validità sessione", request.getToken(), engine.getActionType());
 	                	}
 	                	
-	                	cout.println(engine.getResponse());
+	                	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(engine);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("User", mapper.valueToTree(user));
+                    	jsonApp.set("Item", mapper.valueToTree(item2));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
                         cout.flush();
             		break;
             		
 	                case SEARCH_ITEMS_REQUEST:
 	                	engine = new GestioneCollezione();
+	                	Ricerca ricerca = new Ricerca();
 	                	
 	                	if(tokenizer.isInSession(request.getToken()))
 	                	{
 		                	Ricercato ricercato = new Ricercato();
-		                	Ricerca ricerca = new Ricerca();
-		                	
+	
 		                	ricercato=mapper.convertValue(lista.get(0), Ricercato.class);
 		                	
-		                	userJson=ricerca.cerca(ricercato.getValore(), ricercato.getModalita());
+		                	ricerca.cerca(ricercato.getValore(), ricercato.getModalita());
 		                	engine.setActionType(ActionType.SEARCH_ITEMS_RESPONSE);
-		                	engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), engine.getActionType(), userJson);			
+		                	engine.setResponse(HttpStatus.OK.getCodice(), HttpStatus.OK.getMessaggio(), request.getToken(), engine.getActionType());			
 	                	
 	                	}
 	                	else
 	                	{
 	                		engine.setActionType(ActionType.SEARCH_ITEMS_RESPONSE);
-	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio(), engine.getToken(), engine.getActionType(), "Accesso al sistema non consentito verifica validità sessione");
+	                        engine.setResponse(HttpStatus.NOT_FOUND.getCodice(), HttpStatus.NOT_FOUND.getMessaggio()+" Accesso al sistema non consentito verifica validità sessione", request.getToken(), engine.getActionType());
 	                	}
 	                	
-	                	
-	                	cout.println(engine.getResponse());
+	                	jsonApp = mapper.createObjectNode();
+                    	nodoJsonApp = mapper.valueToTree(engine);
+                    	jsonApp.setAll((ObjectNode) nodoJsonApp);
+                    	jsonApp.set("User", mapper.valueToTree(ricerca));
+                    	jsonApp.set("Item", mapper.valueToTree(item2));
+	                    System.out.println(mapper.writeValueAsString(jsonApp));
                         cout.flush();
                 	break;
             		

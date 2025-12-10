@@ -28,7 +28,7 @@ public class TestGestConnessione {
             // Avvio server in thread separato
             new Thread(() -> {
                 try {
-                    GestioneConnessione conn = new GestioneConnessione(1057);
+                    GestioneConnessione conn = new GestioneConnessione(1051);
                     Payload payload = new Payload(conn);
                     payload.payload();
                 } catch (Exception e) {
@@ -39,7 +39,7 @@ public class TestGestConnessione {
             Thread.sleep(1000); // aspetta che il server sia pronto
 
             // === CLIENT ===
-            Socket client = new Socket("localhost", 1057);
+            Socket client = new Socket("localhost", 1050);
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
@@ -49,7 +49,7 @@ public class TestGestConnessione {
             
             // Creo un utente valido per il login
             User user = new User();
-            user.setUsername("sjbds");      // username che il server riconosce
+            user.setUsername("teo");      // username che il server riconosce
             user.setPassword("1235"); 
             user.setCognome("sdf");
             user.setNome("teow");
@@ -76,13 +76,13 @@ public class TestGestConnessione {
             List<Object> lista = new ArrayList<>();
             //lista.add(user);
             //lista.add(item);
-            lista.add(ricercato);
+            lista.add(user);
             
             // Token vuoto per login iniziale
             String token = "Oukimcq4Nf";
 
             GeneratoreJson request = new GeneratoreJson();
-            String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.SEARCH_ITEMS_REQUEST, lista));
+            String json = mapper.writeValueAsString(request.getOggettoRequest(token, ActionType.LOGIN_REQUEST, lista));
 
             System.out.println("=== CLIENT - INVIO LOGIN_REQUEST ===");
             System.out.println(json);

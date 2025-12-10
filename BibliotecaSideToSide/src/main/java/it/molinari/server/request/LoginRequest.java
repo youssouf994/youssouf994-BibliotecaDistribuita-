@@ -11,6 +11,7 @@ public class LoginRequest extends Request
 	private GestioneJson IOJson = new GestioneJson();
 	private List<User> users = new ArrayList<User>();
 	private List<Object> listaData= new ArrayList<Object>();
+	private User u = new User();
 	
 	public LoginRequest()
 	{
@@ -19,6 +20,7 @@ public class LoginRequest extends Request
 	
 	public boolean provaLogin(User user)//errore mettere una funzione nel dto
 	{
+		this.users.clear();
 		this.users=IOJson.leggiJson(1, User.class);
 		boolean check= false;
 		
@@ -28,6 +30,7 @@ public class LoginRequest extends Request
 	        if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword()))// utente già registrato
 	        {       
 	            check=true;
+	            this.u=u;
 	            break;
 	        }
 	        else
@@ -62,6 +65,16 @@ public class LoginRequest extends Request
 	public void setListaData(List<Object> listaData) {
 		this.listaData = listaData;
 	}
+
+	public User getU() {
+		return u;
+	}
+
+	public void setU(User u) {
+		this.u = u;
+	}
+	
+	
 	
 	
 }

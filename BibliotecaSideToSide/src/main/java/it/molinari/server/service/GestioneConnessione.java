@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GestioneConnessione 
 {
-	protected static final int PORT=1057;
+	protected static final int PORT=1050;
 	protected ServerSocket serverSocket;
 	protected Socket clientSocket=null;//abbinamento per il client
 	protected BufferedReader inputDaClient= null;
